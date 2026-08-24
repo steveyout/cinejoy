@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net: Default-deny all unexpected paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Hardened Helper Functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Health / Test Connection Check
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    // User Profile Document
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && incoming().userId == userId;
+      allow update: if isOwner(userId) && incoming().userId == userId;
+      allow delete: if isOwner(userId);
+
+      // User Synchronized Watchlist Collection
+      match /watchlist/{mediaId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // User Playback & Continue Watching History
+      match /history/{mediaId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // User Cloud Settings & Preferences
+      match /settings/{docId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+
+      // User Telemetry & Analytics Logs
+      match /events/{eventId} {
+        allow get, list: if isOwner(userId);
+        allow create: if isOwner(userId) && incoming().userId == userId;
+        allow update: if isOwner(userId) && incoming().userId == userId;
+        allow delete: if isOwner(userId);
+      }
+    }
+  }
+}

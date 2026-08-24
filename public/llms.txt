@@ -1,0 +1,21 @@
+# Popcorn
+
+> Popcorn is a modern cinema discovery Progressive Web App (PWA) built with frosted-glass aesthetics, real-time TMDB movie & TV data integration, high-definition trailer playback, circular user score rings, and offline-capable library management.
+
+## Documentation & Technical Specifications
+- [Full LLM Specification](/llms-full.txt): Comprehensive architectural, component, and schema documentation for LLMs and AI assistants.
+- [PWA Web App Manifest](/manifest.json): Progressive Web App configuration, theme tokens, and standalone display manifest.
+- [Robots Exclusion Policy](/robots.txt): Machine-readable crawling and indexing permissions for search engines and AI crawlers.
+- [XML Sitemap](/sitemap.xml): Complete indexing map of all primary views, categories, and deep links.
+
+## Main Navigation & Features
+- [Home Feed](/?tab=home): Featured cinema billboard carousel, Top 10 leaderboards, trending blockbusters, and popular TV series.
+- [Discover Movies](/?tab=browse&type=movie): Granular media filtering across feature films by genre, release year, sort order, and TMDB user score.
+- [Discover TV Shows](/?tab=browse&type=tv): Explore serialized television, drama series, and network seasons.
+- [Search Catalog](/?tab=search): Real-time debounced search across titles, actors, genres, and directors with instant query suggestions.
+- [Personal Library](/?tab=library): User's offline-resilient watchlist, favorites collection, and custom playback preferences.
+
+## Data Providers & Integrations
+- [The Movie Database (TMDB)](https://www.themoviedb.org): Real-time movie and television metadata, high-resolution poster art, cast lists, and audience ratings.
+- [YouTube](https://www.youtube.com): Embedded official high-definition trailers and video teaser clips.
+

@@ -1,0 +1,245 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public user profile representation.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Unique Firebase Authentication UID."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "User email address."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name."
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User profile avatar image URL."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Account registration timestamp."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Profile last updated timestamp."
+        }
+      },
+      "required": ["userId", "displayName"]
+    },
+    "UserWatchlistItem": {
+      "title": "UserWatchlistItem",
+      "description": "Movie or TV Show saved into user personal cloud watchlist.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID."
+        },
+        "mediaId": {
+          "type": "number",
+          "description": "TMDB Media ID."
+        },
+        "mediaType": {
+          "type": "string",
+          "enum": ["movie", "tv"],
+          "description": "Type of media."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of movie or series."
+        },
+        "posterPath": {
+          "type": "string",
+          "description": "TMDB Poster image path."
+        },
+        "backdropPath": {
+          "type": "string",
+          "description": "TMDB Backdrop image path."
+        },
+        "voteAverage": {
+          "type": "number",
+          "description": "TMDB Vote average rating."
+        },
+        "releaseDate": {
+          "type": "string",
+          "description": "Release date or first air date."
+        },
+        "isFavorite": {
+          "type": "boolean",
+          "description": "Whether marked as favorite."
+        },
+        "isWatched": {
+          "type": "boolean",
+          "description": "Whether marked as watched."
+        },
+        "addedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when added."
+        }
+      },
+      "required": ["userId", "mediaId", "mediaType", "title"]
+    },
+    "UserHistoryItem": {
+      "title": "UserHistoryItem",
+      "description": "Streaming viewing progress and history.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID."
+        },
+        "mediaId": {
+          "type": "number",
+          "description": "TMDB Media ID."
+        },
+        "mediaType": {
+          "type": "string",
+          "enum": ["movie", "tv"],
+          "description": "Type of media."
+        },
+        "title": {
+          "type": "string",
+          "description": "Media title."
+        },
+        "posterPath": {
+          "type": "string",
+          "description": "Poster path."
+        },
+        "backdropPath": {
+          "type": "string",
+          "description": "Backdrop path."
+        },
+        "season": {
+          "type": "number",
+          "description": "TV season number."
+        },
+        "episode": {
+          "type": "number",
+          "description": "TV episode number."
+        },
+        "lastWatchedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of last playback session."
+        }
+      },
+      "required": ["userId", "mediaId", "mediaType", "title"]
+    },
+    "UserSettings": {
+      "title": "UserSettings",
+      "description": "User custom streaming preferences and theme config.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID."
+        },
+        "accentColor": {
+          "type": "string",
+          "description": "Active UI theme accent."
+        },
+        "autoplayNextEpisode": {
+          "type": "boolean",
+          "description": "Autoplay next TV episode toggle."
+        },
+        "autoplayStream": {
+          "type": "boolean",
+          "description": "Autoplay stream on load toggle."
+        },
+        "playerLanguage": {
+          "type": "string",
+          "description": "Default audio language."
+        },
+        "streamQuality": {
+          "type": "string",
+          "description": "Stream quality."
+        },
+        "ambientLightEnabled": {
+          "type": "boolean",
+          "description": "Ambient light toggle."
+        },
+        "ambientIntensity": {
+          "type": "string",
+          "description": "Ambient intensity."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last updated timestamp."
+        }
+      },
+      "required": ["userId"]
+    },
+    "UserAnalyticsEvent": {
+      "title": "UserAnalyticsEvent",
+      "description": "Stream play and media interaction telemetry event.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "User UID who generated the event."
+        },
+        "eventName": {
+          "type": "string",
+          "description": "Name of analytics event."
+        },
+        "mediaId": {
+          "type": "number",
+          "description": "Target media ID if applicable."
+        },
+        "mediaTitle": {
+          "type": "string",
+          "description": "Target media title."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Event timestamp."
+        }
+      },
+      "required": ["userId", "eventName", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Public user profile document."
+    },
+    "/users/{userId}/watchlist/{mediaId}": {
+      "schema": {
+        "$ref": "#/entities/UserWatchlistItem"
+      },
+      "description": "User private synchronized watchlist entries."
+    },
+    "/users/{userId}/history/{mediaId}": {
+      "schema": {
+        "$ref": "#/entities/UserHistoryItem"
+      },
+      "description": "User playback history and continue watching progress."
+    },
+    "/users/{userId}/settings/prefs": {
+      "schema": {
+        "$ref": "#/entities/UserSettings"
+      },
+      "description": "User persistent settings and playback preferences."
+    },
+    "/users/{userId}/events/{eventId}": {
+      "schema": {
+        "$ref": "#/entities/UserAnalyticsEvent"
+      },
+      "description": "User personal streaming and discovery telemetry events."
+    }
+  }
+}

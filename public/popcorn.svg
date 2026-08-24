@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="popcornBucket" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ef4444" />
+      <stop offset="100%" stop-color="#b91c1c" />
+    </linearGradient>
+    <linearGradient id="popcornKernel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="40%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <linearGradient id="butterCore" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+  </defs>
+
+  <!-- Puffed Popcorn Top -->
+  <g>
+    <circle cx="22" cy="18" r="6" fill="url(#popcornKernel)" />
+    <circle cx="32" cy="14" r="7.5" fill="url(#popcornKernel)" />
+    <circle cx="42" cy="18" r="6" fill="url(#popcornKernel)" />
+    <circle cx="16" cy="24" r="5" fill="url(#popcornKernel)" />
+    <circle cx="48" cy="24" r="5" fill="url(#popcornKernel)" />
+    <circle cx="26" cy="22" r="6" fill="url(#butterCore)" />
+    <circle cx="38" cy="22" r="6" fill="url(#butterCore)" />
+    <circle cx="32" cy="24" r="6.5" fill="url(#popcornKernel)" />
+  </g>
+
+  <!-- Cinema Bucket Base -->
+  <path d="M 16 28 L 20 55 Q 21 58 24 58 L 40 58 Q 43 58 44 55 L 48 28 Z" fill="url(#popcornBucket)" />
+  
+  <!-- Classic Red/White Stripes -->
+  <path d="M 30 28 L 30.5 58 L 33.5 58 L 34 28 Z" fill="#ffffff" />
+  <path d="M 22.5 28 L 25 57.5 L 27.5 57.5 L 25.5 28 Z" fill="#ffffff" />
+  <path d="M 38.5 28 L 36.5 57.5 L 39 57.5 L 41.5 28 Z" fill="#ffffff" />
+
+  <!-- Top Rim -->
+  <rect x="14" y="27" width="36" height="3.5" rx="1.75" fill="#f8fafc" />
+</svg>

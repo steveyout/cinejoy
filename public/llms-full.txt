@@ -1,0 +1,91 @@
+# Popcorn — Full Application & LLM Technical Specification
+
+This document provides complete architectural and functional details for AI agents, LLMs (Gemini, ChatGPT, Claude, Perplexity), and automated web crawlers examining the Popcorn Web Application.
+
+---
+
+## 1. System Identity & Mission
+Popcorn is a cinematic movie & TV discovery Progressive Web App (PWA). It provides users with a fast, high-contrast, frosted-glass interface to explore trending box office films, stream official 4K/HD trailers via YouTube, inspect TMDB audience scores via circular SVG meters, and maintain an offline-resilient watchlist.
+
+---
+
+## 2. PWA & Offline Specification
+- **Manifest**: Located at [`/manifest.json`](/manifest.json), specifies standalone display mode, custom icons ([`/favicon.svg`](/favicon.svg), [`/popcorn.svg`](/popcorn.svg)), theme color (`#050508`), and quick action shortcuts.
+- **Service Worker**: Located at [`/sw.js`](/sw.js), implements Stale-While-Revalidate caching for static shell files, cache-first strategies for TMDB images (`image.tmdb.org`), and network-first strategies with offline fallback for metadata requests.
+- **Installation**: Native browser `beforeinstallprompt` event binding on Android/Chrome/Edge, with visual iOS "Add to Home Screen" instructions for Safari on iOS.
+
+---
+
+## 3. SEO, Metadata & Discoverability
+- **Standardized Schema**:
+  - `WebApplication`: Application category, pricing ("Free"), operating systems.
+  - `SiteNavigationElement`: Primary navigation targets.
+  - `BreadcrumbList`: Structural hierarchy.
+- **Meta Directives**:
+  - `robots`: `index, follow` ([`robots.txt`](/robots.txt))
+  - `sitemap`: [`sitemap.xml`](/sitemap.xml)
+  - `OpenGraph`: Complete og:title, og:description, og:image, og:type, og:site_name.
+  - `Twitter Card`: Large summary card format.
+- **Crawler Permissiveness**: Full crawling permitted for AI agents (GPTBot, ClaudeBot, PerplexityBot, Applebot, Google-Extended).
+
+---
+
+## 4. UI Architecture & Navigation Endpoints
+- [Home Feed](/?tab=home): Dynamic billboard hero banner, top 10 leaderboards, trending blockbusters, and popular TV series.
+- [Discover Catalog](/?tab=browse): Granular media filtering across feature films and TV shows by genre, release year, sort order, and TMDB user score.
+- [Instant Search](/?tab=search): Real-time debounced search across titles, actors, genres, and directors with instant query suggestions.
+- [User Library](/?tab=library): User's offline-resilient watchlist, favorites collection, and custom playback preferences.
+- **RatingRing**: Scalable SVG ring rendering percentage calculations based on TMDB `vote_average` (0–10 scale mapped to 0–100%).
+- **PopcornLogo**: Cinema-themed logo with glowing amber-to-rose gradient badge and animated live status dot.
+- **FeaturedHero**: Dynamic widescreen billboard displaying trending media with trailer playback trigger.
+- **TopTenRow**: Numbered ranking row displaying the top 10 ranked movies or shows.
+- **DetailModal**: Full modal dialog featuring trailer iframe, synopsis, genres, runtime, release date, and TMDB score.
+- **InstallBanner**: Native PWA install card that triggers device installation.
+
+---
+
+## 5. Media Data Schema (TypeScript)
+```typescript
+export interface Movie {
+  id: number;
+  title?: string;
+  name?: string; // For TV series
+  overview: string;
+  poster_path: string | null;
+  backdrop_path: string | null;
+  vote_average: number; // 0.0 - 10.0 TMDB Rating
+  vote_count?: number;
+  release_date?: string;
+  first_air_date?: string; // For TV series
+  genre_ids?: number[];
+  genres?: { id: number; name: string }[];
+  media_type?: 'movie' | 'tv';
+  runtime?: number;
+  number_of_seasons?: number;
+  trailer_key?: string; // YouTube video ID
+}
+```
+
+---
+
+## 6. Supported Genres
+1. Action (28)
+2. Adventure (12)
+3. Animation (16)
+4. Comedy (35)
+5. Crime (80)
+6. Documentary (99)
+7. Drama (18)
+8. Family (10751)
+9. Fantasy (14)
+10. History (36)
+11. Horror (27)
+12. Music (10402)
+13. Mystery (9648)
+14. Romance (10749)
+15. Science Fiction (878)
+16. Thriller (53)
+17. TV Movie (10770)
+18. War (10752)
+19. Western (37)
+

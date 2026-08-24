@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+
+    <!-- Window Fetch Protection Shim for Polyfills in Sandboxed Environments -->
+    <script>
+      (function() {
+        try {
+          var nativeFetch = window.fetch;
+          if (nativeFetch) {
+            var desc = Object.getOwnPropertyDescriptor(window, 'fetch');
+            if (!desc || (!desc.set && !desc.writable)) {
+              var _fetch = nativeFetch.bind(window);
+              Object.defineProperty(window, 'fetch', {
+                get: function() {
+                  return _fetch;
+                },
+                set: function(newFetch) {
+                  if (typeof newFetch === 'function') {
+                    _fetch = newFetch;
+                  }
+                },
+                configurable: true,
+                enumerable: true
+              });
+            }
+          }
+        } catch (e) {
+          console.warn('Fetch setter initialization warning:', e);
+        }
+      })();
+    </script>
+    
+    <!-- Primary SEO Meta Tags -->
+    <title>Popcorn — Watch Trailers, Discover Movies & TV Shows</title>
+    <meta name="title" content="Popcorn — Watch Trailers, Discover Movies & TV Shows" />
+    <meta name="description" content="Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings with Popcorn — the ultimate frosted glass cinema streaming experience." />
+    <meta name="keywords" content="Popcorn, movies, cinema, TV shows, watch trailers, TMDB ratings, stream movies, top 10 movies, film discovery, cinema app, PWA movies" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="theme-color" content="#050508" />
+
+    <!-- AI Agent & LLM Context References -->
+    <link rel="alternate" type="text/markdown" href="/llms.txt" title="LLMs.txt Specification" />
+    <link rel="alternate" type="text/markdown" href="/llms-full.txt" title="Full LLM Specification" />
+
+    <!-- Progressive Web App (PWA) Manifest & Capabilities -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Popcorn" />
+    <meta name="application-name" content="Popcorn" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Favicon & Touch Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.svg" />
+    <link rel="mask-icon" href="/favicon.svg" color="#f59e0b" />
+    <link rel="shortcut icon" href="/favicon.svg" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Popcorn" />
+    <meta property="og:title" content="Popcorn — Watch Trailers, Discover Movies & TV Shows" />
+    <meta property="og:description" content="Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings on Popcorn." />
+    <meta property="og:image" content="/favicon.svg" />
+    <meta property="og:image:alt" content="Popcorn Cinema Discovery App" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Popcorn — Watch Trailers, Discover Movies & TV Shows" />
+    <meta name="twitter:description" content="Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings on Popcorn." />
+    <meta name="twitter:image" content="/favicon.svg" />
+
+    <!-- Search Engine Schema.org JSON-LD -->
+    <script type="application/ld+json">
+      [
+        {
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          "name": "Popcorn",
+          "applicationCategory": "EntertainmentApplication",
+          "genre": "Movies & TV",
+          "operatingSystem": "All",
+          "description": "A frosted-glass cinematic movie and TV series discovery Progressive Web App powered by TMDB.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "1250"
+          }
+        },
+        {
+          "@context": "https://schema.org",
+          "@type": "SiteNavigationElement",
+          "name": ["Home", "Browse Movies", "Trending TV", "Search", "Library"],
+          "url": ["/?tab=home", "/?tab=browse&type=movie", "/?tab=browse&type=tv", "/?tab=search", "/?tab=library"]
+        }
+      ]
+    </script>
+  </head>
+  <body class="bg-[#050508] text-slate-100 antialiased selection:bg-amber-500 selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

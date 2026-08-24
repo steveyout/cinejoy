@@ -1,0 +1,8 @@
+{
+  "name": "cinejoy",
+  "description": "A glassmorphic movie streaming and discovery app powered by TMDB with multi-domain dynamic branding for CineJoy, FlixHQ, and Popcorn, featuring top charts, detailed movie modals with trailers, responsive desktop sidebar, and watchlist.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
