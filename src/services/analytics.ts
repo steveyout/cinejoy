@@ -28,7 +28,16 @@ export const trackEvent = async (eventName: string, params: Record<string, any> 
     platform: 'web',
   };
 
-  // 1. Dispatch directly to Firebase Analytics
+  // 1. Dispatch directly to Google Analytics (gtag.js) if present on window
+  if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+    try {
+      (window as any).gtag('event', eventName, enhancedParams);
+    } catch (gtagErr) {
+      console.warn('[gtag] error:', gtagErr);
+    }
+  }
+
+  // 2. Dispatch directly to Firebase Analytics
   const analytics = getFirebaseAnalytics();
   if (analytics) {
     try {

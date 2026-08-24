@@ -1,3 +1,5 @@
+// config/providers.ts
+
 export interface Provider {
   id: string;
   name: string;
@@ -11,83 +13,91 @@ export interface Provider {
 export const providers: Provider[] = [
   {
     id: 'cinemaos',
-    name: 'CinemaOS',
-    baseUrl: 'https://vidcore.org',
+    name: 'Aether 1 (Primary)',
+    baseUrl: 'https://cinemaos.tech',
     enabled: true,
-    tag: 'Default Player',
+    tag: 'Default Engine',
     speed: 'Ultra Fast',
     isDefault: true,
   },
   {
-    id: 'novacore',
-    name: 'NovaCore Stream',
-    baseUrl: 'https://vidsrc.to',
+    id: 'vidking',
+    name: 'Nebula Stream X',
+    baseUrl: 'https://www.vidking.net',
     enabled: true,
-    tag: 'High Bitrate',
+    tag: 'Next Episode',
     speed: '4K Ready',
   },
   {
-    id: 'orion',
-    name: 'Orion CDN',
-    baseUrl: 'https://embed.su',
-    enabled: true,
-    tag: 'Multi-Region',
-    speed: 'Ultra Fast',
-  },
-  {
-    id: 'apexstream',
-    name: 'ApexStream Ultra',
+    id: 'vidlink',
+    name: 'Hyperion Link',
     baseUrl: 'https://vidlink.pro',
     enabled: true,
     tag: 'Zero Buffer',
     speed: 'HD',
   },
   {
-    id: 'nebulaplayer',
-    name: 'Nebula Player',
-    baseUrl: 'https://player.autoembed.cc',
-    enabled: true,
-    tag: 'Global Edge',
-    speed: 'Fast',
-  },
-  {
-    id: 'quantumvid',
-    name: 'QuantumVid Cloud',
-    baseUrl: 'https://player.smashy.stream',
-    enabled: true,
-    tag: 'Direct Server',
-    speed: 'HD',
-  },
-  {
-    id: 'chronocast',
-    name: 'ChronoCast HD',
-    baseUrl: 'https://www.2embed.cc',
-    enabled: true,
-    tag: 'Backup Server',
-    speed: 'Fast',
-  },
-  {
-    id: 'starlight',
-    name: 'Starlight CDN',
-    baseUrl: 'https://multiembed.mov',
-    enabled: true,
-    tag: 'Adaptive Mesh',
-    speed: '4K Ready',
-  },
-  {
-    id: 'helios',
-    name: 'Helios Stream',
-    baseUrl: 'https://player.vidsrc.nl',
+    id: 'vidsrc_to',
+    name: 'Solaris Cloud',
+    baseUrl: 'https://vidsrc.to/embed',
     enabled: true,
     tag: 'VIP Server',
     speed: 'Ultra Fast',
   },
   {
+    id: 'vidnest',
+    name: 'Chronos Node',
+    baseUrl: 'https://vidnest.fun',
+    enabled: true,
+    tag: 'Direct Node',
+    speed: 'HD',
+  },
+  {
+    id: 'vidfast',
+    name: 'Vortex Quantum',
+    baseUrl: 'https://vidfast.net',
+    enabled: true,
+    tag: 'Fast Buffer',
+    speed: 'Fast',
+  },
+  {
+    id: 'videasy',
+    name: 'Elysium Edge',
+    baseUrl: 'https://player.videasy.net',
+    enabled: true,
+    tag: 'Global Edge',
+    speed: 'Fast',
+  },
+  {
+    id: 'vidsrc_me',
+    name: 'Pulsar Relay',
+    baseUrl: 'https://vsembed.ru/embed',
+    enabled: true,
+    tag: 'Backup Server',
+    speed: 'HD',
+  },
+  {
+    id: 'vidup',
+    name: 'Titan Mesh',
+    baseUrl: 'https://vidup.to',
+    enabled: true,
+    tag: 'Adaptive Mesh',
+    speed: 'Fast',
+  },
+  {
+    id: 'rivestream',
+    name: 'Zenith Direct',
+    baseUrl: 'https://rivestream.org/embed',
+    enabled: true,
+    tag: 'High Bitrate',
+    speed: '4K Ready',
+  },
+  {
     id: 'vidcore',
-    name: 'VidCore Engine',
+    name: 'Astral Core 9',
     baseUrl: 'https://vidcore.org',
     enabled: true,
-    tag: 'Legacy Core',
+    tag: 'VidCore Core',
     speed: 'Ultra Fast',
   },
 ];
@@ -114,8 +124,8 @@ export interface EmbedOptions {
 }
 
 /**
- * Builds the embed stream URL for the selected provider.
- * CinemaOS (default) supports full custom styling, parameters, language tracks, and postMessages.
+ * Helper to build the URL based on media type
+ * Supports both Movies and TV Shows
  */
 export const getEmbedUrl = (
   providerId: string = DEFAULT_PROVIDER_ID,
@@ -127,12 +137,33 @@ export const getEmbedUrl = (
   themeColor: string = 'F59E0B',
   options: EmbedOptions = {}
 ): string => {
-  const cleanTheme = (themeColor.startsWith('#') ? themeColor.slice(1) : themeColor) || 'F59E0B';
+  const selected = providers.find((p) => p.id === providerId) || providers[0];
   const cleanId = String(tmdbId);
-  const targetProvider = providerId || DEFAULT_PROVIDER_ID;
+  const cleanTheme = (themeColor.startsWith('#') ? themeColor.slice(1) : themeColor) || 'F59E0B';
 
-  // 1. CinemaOS & VidCore (Full parameter support)
-  if (targetProvider === 'cinemaos' || targetProvider === 'vidcore') {
+  // Server 1 (CinemaOS)
+  if (selected.id === 'cinemaos') {
+    return type === 'movie'
+      ? `${selected.baseUrl}/player/${cleanId}`
+      : `${selected.baseUrl}/player/${cleanId}/${season}/${episode}`;
+  }
+
+  // Server 2 (VidKing Premium)
+  if (selected.id === 'vidking') {
+    let url = "";
+    if (type === 'movie') {
+      url = `${selected.baseUrl}/embed/movie/${cleanId}?color=e50914`;
+    } else {
+      url = `${selected.baseUrl}/embed/tv/${cleanId}/${season}/${episode}?color=e50914&nextEpisode=true&episodeSelector=true`;
+    }
+    if (progressSeconds > 0 || (options.startAt && options.startAt > 0)) {
+      url += `&progress=${progressSeconds || options.startAt}`;
+    }
+    return url;
+  }
+
+  // Server 11 (VidCore)
+  if (selected.id === 'vidcore') {
     const baseUrl = 'https://vidcore.org';
     const path = type === 'movie'
       ? `${baseUrl}/embed/movie/${cleanId}`
@@ -145,23 +176,18 @@ export const getEmbedUrl = (
     if (options.autoplay !== false) {
       queryParams.set('autoplay', '1');
     }
-
     if (progressSeconds > 0 || (options.startAt && options.startAt > 0)) {
       queryParams.set('startAt', String(progressSeconds || options.startAt || 0));
     }
-
     if (options.lang) {
       queryParams.set('lang', options.lang);
     }
-
     if (options.showRelated !== undefined) {
       queryParams.set('showRelated', options.showRelated ? 'true' : 'false');
     }
-
     if (options.disableInfo) {
       queryParams.set('disableInfo', 'true');
     }
-
     if (options.disableControls) {
       queryParams.set('disableControls', 'true');
     }
@@ -169,67 +195,67 @@ export const getEmbedUrl = (
     return `${path}?${queryParams.toString()}`;
   }
 
-  // 2. NovaCore Stream (vidsrc.to)
-  if (targetProvider === 'novacore') {
+  // Server 3 (VidLink Pro)
+  if (selected.id === 'vidlink') {
     return type === 'movie'
-      ? `https://vidsrc.to/embed/movie/${cleanId}`
-      : `https://vidsrc.to/embed/tv/${cleanId}/${season}/${episode}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // 3. Orion CDN (embed.su)
-  if (targetProvider === 'orion') {
+  // Server 4 (VIP / vidsrc.to)
+  if (selected.id === 'vidsrc_to') {
     return type === 'movie'
-      ? `https://embed.su/embed/movie/${cleanId}`
-      : `https://embed.su/embed/tv/${cleanId}/${season}/${episode}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // 4. ApexStream Ultra (vidlink.pro)
-  if (targetProvider === 'apexstream') {
-    const autoParam = options.autoplay !== false ? '?autoplay=true' : '';
+  // Server 5 (VidNest)
+  if (selected.id === 'vidnest') {
     return type === 'movie'
-      ? `https://vidlink.pro/movie/${cleanId}${autoParam}`
-      : `https://vidlink.pro/tv/${cleanId}/${season}/${episode}${autoParam}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // 5. Nebula Player (player.autoembed.cc)
-  if (targetProvider === 'nebulaplayer') {
+  // Server 6 (VidFast)
+  if (selected.id === 'vidfast') {
     return type === 'movie'
-      ? `https://player.autoembed.cc/embed/movie/${cleanId}`
-      : `https://player.autoembed.cc/embed/tv/${cleanId}/${season}/${episode}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // 6. QuantumVid Cloud (player.smashy.stream)
-  if (targetProvider === 'quantumvid') {
+  // Server 7 (VidEasy)
+  if (selected.id === 'videasy') {
     return type === 'movie'
-      ? `https://player.smashy.stream/movie/${cleanId}`
-      : `https://player.smashy.stream/tv/${cleanId}?s=${season}&e=${episode}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // 7. ChronoCast HD (2embed.cc)
-  if (targetProvider === 'chronocast') {
+  // Server 8 (Vidsrc Me)
+  if (selected.id === 'vidsrc_me') {
     return type === 'movie'
-      ? `https://www.2embed.cc/embed/${cleanId}`
-      : `https://www.2embed.cc/embedtv/${cleanId}&s=${season}&e=${episode}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // 8. Starlight CDN (multiembed.mov)
-  if (targetProvider === 'starlight') {
+  // Server 9 (Vidup)
+  if (selected.id === 'vidup') {
     return type === 'movie'
-      ? `https://multiembed.mov/?video_id=${cleanId}&tmdb=1`
-      : `https://multiembed.mov/?video_id=${cleanId}&tmdb=1&s=${season}&e=${episode}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // 9. Helios Stream (player.vidsrc.nl)
-  if (targetProvider === 'helios') {
+  // Server 10 (Rive)
+  if (selected.id === 'rivestream') {
     return type === 'movie'
-      ? `https://player.vidsrc.nl/embed/movie/${cleanId}`
-      : `https://player.vidsrc.nl/embed/tv/${cleanId}/${season}/${episode}`;
+      ? `${selected.baseUrl}/movie/${cleanId}`
+      : `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
   }
 
-  // Default Fallback to CinemaOS
-  return type === 'movie'
-    ? `https://vidcore.org/embed/movie/${cleanId}?theme=${cleanTheme}&color=${cleanTheme}&autoplay=1`
-    : `https://vidcore.org/embed/tv/${cleanId}/${season}/${episode}?theme=${cleanTheme}&color=${cleanTheme}&autoplay=1`;
+  // Fallbacks for other servers
+  if (type === 'movie') {
+    return `${selected.baseUrl}/movie/${cleanId}`;
+  }
+  return `${selected.baseUrl}/tv/${cleanId}/${season}/${episode}`;
 };
 
 export const getNextEnabledProviderId = (currentId: string, failedIds: string[] = []): string | null => {
