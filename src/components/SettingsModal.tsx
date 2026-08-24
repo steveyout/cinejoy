@@ -18,7 +18,9 @@ import {
   EyeOff,
   Sun,
   Layers,
-  Palette
+  Palette,
+  Server,
+  Zap
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useApp } from '../context/AppContext';
@@ -26,6 +28,7 @@ import { triggerHaptic } from '../utils/haptics';
 import { GLASS_TINTS, getGlassTintConfig } from '../utils/themeStyles';
 import { GlassmorphismTint } from '../types';
 import { getDomainBranding } from '../utils/domainBranding';
+import { providers, DEFAULT_PROVIDER_ID } from '../config/providers';
 
 export const SettingsModal: React.FC = () => {
   const { isSettingsOpen, setIsSettingsOpen, settings, updateSettings, showToast } = useApp();
@@ -124,8 +127,8 @@ export const SettingsModal: React.FC = () => {
                   <SlidersHorizontal className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white tracking-tight">VidCore & Stream Settings</h2>
-                  <p className="text-xs text-white/50">Next-gen parameters, episodes & player configurations</p>
+                  <h2 className="text-lg font-bold text-white tracking-tight">Stream & Player Settings</h2>
+                  <p className="text-xs text-white/50">Multi-provider streaming engines, parameters & themes</p>
                 </div>
               </div>
 
@@ -140,6 +143,65 @@ export const SettingsModal: React.FC = () => {
               >
                 <X className="w-5 h-5" />
               </button>
+            </div>
+
+            {/* 0. Streaming Provider & Server Engine Selection */}
+            <div className="space-y-3 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-bold uppercase tracking-wider text-white/80 flex items-center gap-1.5">
+                  <Server className="w-4 h-4 text-cyan-400" />
+                  <span>Default Streaming Provider</span>
+                </label>
+                <span className="text-[10px] text-cyan-300 font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/30">
+                  {providers.find((p) => p.id === (settings.defaultProviderId || DEFAULT_PROVIDER_ID))?.name || 'CinemaOS (Default)'}
+                </span>
+              </div>
+              <p className="text-[11px] text-white/50 leading-relaxed">
+                Choose your default stream engine. <strong>CinemaOS</strong> provides ultra-fast buffering, multi-language audio selection, and synchronized player events.
+              </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                {providers.map((p) => {
+                  const isSelected = (settings.defaultProviderId || DEFAULT_PROVIDER_ID) === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      onClick={() => {
+                        triggerHaptic('selection');
+                        updateSettings({ defaultProviderId: p.id });
+                        showToast(`Default provider set to ${p.name}`);
+                      }}
+                      className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between gap-2 ${
+                        isSelected
+                          ? 'bg-gradient-to-r from-cyan-500/25 to-blue-500/25 border-cyan-400 text-white shadow-lg scale-[1.01]'
+                          : 'bg-black/40 border-white/10 text-white/70 hover:text-white hover:bg-white/10 hover:border-white/20'
+                      }`}
+                    >
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-bold text-white truncate">{p.name}</span>
+                          {p.isDefault && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-md bg-cyan-400/20 text-cyan-300 font-bold">
+                              Default
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[10px] text-white/40 flex items-center gap-2 mt-0.5">
+                          <span className="text-emerald-400">{p.speed || 'HD'}</span>
+                          <span>•</span>
+                          <span>{p.tag || 'Online'}</span>
+                        </div>
+                      </div>
+                      {isSelected && (
+                        <div className="w-5 h-5 rounded-full bg-cyan-500 text-black flex items-center justify-center text-xs font-black flex-shrink-0">
+                          ✓
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* 1. VidCore Episode & Next Episode Parameters */}

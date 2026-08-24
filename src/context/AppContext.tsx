@@ -13,6 +13,8 @@ import {
 } from '../services/firestoreSync';
 import { trackWatchlistAction, trackSearch, trackPageView } from '../services/analytics';
 
+import { DEFAULT_PROVIDER_ID } from '../config/providers';
+
 interface ToastMessage {
   id: string;
   text: string;
@@ -67,6 +69,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   glassTint: 'violet',
   autoPlayTrailers: true,
   streamQuality: '1080p',
+  defaultProviderId: DEFAULT_PROVIDER_ID, // 'cinemaos'
   autoplayNextEpisode: true,
   autoplayStream: true,
   playerLanguage: 'en',
