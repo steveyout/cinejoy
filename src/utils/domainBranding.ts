@@ -27,10 +27,10 @@ export const getDomainBranding = (): DomainBrandConfig => {
       brandName: 'CineJoy',
       brandShortName: 'CineJoy',
       brandSub: 'CINEMA JOY',
-      documentTitle: 'CineJoy — Discover Movies, TV Shows & 4K Trailers',
-      description: 'Experience the joy of cinema with CineJoy. Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.',
-      keywords: 'CineJoy, cinejoy.online, Cine Joy, cinema joy, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
-      domain: 'cinejoy.online',
+      documentTitle: 'CineJoy — Watch Movies & TV Series Online Free HD',
+      description: 'Watch movies and TV series online in HD for free on CineJoy (cinejoy.to). Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.',
+      keywords: 'CineJoy, cinejoy.to, Cine Joy, cinema joy, watch movies online, stream free movies, HD tv shows, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
+      domain: 'cinejoy.to',
       logoType: 'cinejoy',
       accentGradient: 'from-amber-400 via-rose-500 to-purple-600',
       badgeGlowColor: 'rgba(245, 158, 11, 0.45)',
@@ -43,16 +43,16 @@ export const getDomainBranding = (): DomainBrandConfig => {
   const urlParams = new URLSearchParams(window.location.search);
   const brandParam = urlParams.get('brand')?.toLowerCase();
 
-  // 1. FlixHQ Branding (flixhq.ink)
-  if (brandParam === 'flixhq' || hostname.includes('flixhq') || hostname.includes('flixhq.ink')) {
+  // 1. FlixHQ Branding (flixhq.ink, flixhq.to, flixhq)
+  if (brandParam === 'flixhq' || hostname.includes('flixhq') || hostname.includes('flixhq.ink') || hostname.includes('flixhq.to')) {
     return {
       brandName: 'FlixHQ',
       brandShortName: 'FlixHQ',
       brandSub: 'STREAM FREE HD',
       documentTitle: 'FlixHQ — Watch Movies & TV Series Online Free HD',
-      description: 'Watch top trending movies, binge-worthy TV shows, and 4K official trailers online with FlixHQ — fast, free streaming with TMDB ratings and cinema discovery.',
-      keywords: 'FlixHQ, flixhq.ink, watch movies online, stream free movies, HD tv shows, FlixHQ streaming, trailers, TMDB ratings, movies and series, cinema app',
-      domain: 'flixhq.ink',
+      description: 'Watch movies and TV series online in HD for free on FlixHQ (flixhq.to). Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings.',
+      keywords: 'FlixHQ, flixhq.to, flixhq.ink, watch movies online, stream free movies, HD tv shows, FlixHQ streaming, trailers, TMDB ratings, movies and series, cinema app, PWA movies',
+      domain: 'flixhq.to',
       logoType: 'flixhq',
       accentGradient: 'from-emerald-400 via-teal-500 to-cyan-600',
       badgeGlowColor: 'rgba(16, 185, 129, 0.45)',
@@ -60,16 +60,24 @@ export const getDomainBranding = (): DomainBrandConfig => {
     };
   }
 
-  // 2. CineJoy Branding (cinejoy.online)
-  if (brandParam === 'cinejoy' || hostname.includes('cinejoy') || hostname.includes('cinejoy.online')) {
+  // 2. CineJoy Branding (cinejoy.online, cinejoy.to, cunejo.online, or default)
+  if (
+    brandParam === 'cinejoy' ||
+    hostname.includes('cinejoy') ||
+    hostname.includes('cunejo') ||
+    hostname.includes('cinejoy.online') ||
+    hostname.includes('cinejoy.to')
+  ) {
+    const isOnlineDomain = hostname.includes('cinejoy.online') || hostname.includes('cunejo.online');
+    const targetDomain = isOnlineDomain ? 'cinejoy.online' : 'cinejoy.to';
     return {
       brandName: 'CineJoy',
       brandShortName: 'CineJoy',
       brandSub: 'CINEMA JOY',
-      documentTitle: 'CineJoy — Discover Movies, TV Shows & 4K Trailers',
-      description: 'Experience the joy of cinema with CineJoy. Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.',
-      keywords: 'CineJoy, cinejoy.online, Cine Joy, cinema joy, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
-      domain: 'cinejoy.online',
+      documentTitle: `CineJoy — Watch Movies & TV Series Online Free HD`,
+      description: `Watch movies and TV series online in HD for free on CineJoy (${targetDomain}). Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.`,
+      keywords: `CineJoy, ${targetDomain}, Cine Joy, cinema joy, watch movies online, stream free movies, HD tv shows, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies`,
+      domain: targetDomain,
       logoType: 'cinejoy',
       accentGradient: 'from-amber-400 via-rose-500 to-purple-600',
       badgeGlowColor: 'rgba(245, 158, 11, 0.45)',
@@ -92,7 +100,7 @@ export const getDomainBranding = (): DomainBrandConfig => {
     };
   }
 
-  // 4. Popcorn Movies (popcornmovies.online or default)
+  // 4. Popcorn Movies (popcornmovies.online)
   if (brandParam === 'popcorn' || hostname.includes('popcorn') || hostname.includes('popcornmovies.online')) {
     return {
       brandName: 'Popcorn Movies',
@@ -108,15 +116,15 @@ export const getDomainBranding = (): DomainBrandConfig => {
     };
   }
 
-  // Default fallback (CineJoy / Popcorn)
+  // Default fallback (CineJoy - cinejoy.to)
   return {
     brandName: 'CineJoy',
     brandShortName: 'CineJoy',
     brandSub: 'CINEMA JOY',
-    documentTitle: 'CineJoy — Discover Movies, TV Shows & 4K Trailers',
-    description: 'Experience the joy of cinema with CineJoy. Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.',
-    keywords: 'CineJoy, cinejoy.online, Cine Joy, cinema joy, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
-    domain: 'cinejoy.online',
+    documentTitle: 'CineJoy — Watch Movies & TV Series Online Free HD',
+    description: 'Watch movies and TV series online in HD for free on CineJoy (cinejoy.to). Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.',
+    keywords: 'CineJoy, cinejoy.to, Cine Joy, cinema joy, watch movies online, stream free movies, HD tv shows, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
+    domain: 'cinejoy.to',
     logoType: 'cinejoy',
     accentGradient: 'from-amber-400 via-rose-500 to-purple-600',
     badgeGlowColor: 'rgba(245, 158, 11, 0.45)',
@@ -124,7 +132,7 @@ export const getDomainBranding = (): DomainBrandConfig => {
 };
 
 /**
- * Dynamically updates DOM meta tags and title based on the active domain
+ * Dynamically updates DOM meta tags, canonical link, and title based on the active domain
  */
 export const applyDomainSEO = (): void => {
   if (typeof document === 'undefined') return;
@@ -151,6 +159,8 @@ export const applyDomainSEO = (): void => {
     element.setAttribute('content', content);
   };
 
+  const domainUrl = `https://${branding.domain}`;
+
   // Standard Meta Tags
   setMeta('title', branding.documentTitle);
   setMeta('description', branding.description);
@@ -159,12 +169,24 @@ export const applyDomainSEO = (): void => {
   setMeta('apple-mobile-web-app-title', branding.brandShortName);
 
   // Open Graph Tags
+  setMeta('og:url', domainUrl, true);
   setMeta('og:title', branding.documentTitle, true);
   setMeta('og:site_name', branding.brandShortName, true);
   setMeta('og:description', branding.description, true);
 
   // Twitter Tags
+  setMeta('twitter:domain', branding.domain);
+  setMeta('twitter:url', domainUrl);
   setMeta('twitter:title', branding.documentTitle);
   setMeta('twitter:description', branding.description);
+
+  // Canonical Link
+  let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+  if (!canonicalLink) {
+    canonicalLink = document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    document.head.appendChild(canonicalLink);
+  }
+  canonicalLink.setAttribute('href', domainUrl);
 };
 

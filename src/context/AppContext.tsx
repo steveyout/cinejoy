@@ -151,7 +151,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Dynamic Domain SEO Detection & Initial Analytics on Mount
   useEffect(() => {
     applyDomainSEO();
-    trackPageView('home', 'Popcorn Movies & TV Stream');
+    trackPageView('home', 'CineJoy Movies & TV Stream');
   }, []);
 
   // Real-time Cloud Firestore Watchlist & Settings Sync with Firebase Auth

@@ -1,4 +1,4 @@
-# Popcorn Movie & TV Discovery Web App
+# CineJoy Movie & TV Discovery Web App
 # Permissive Crawling Rules for Search Engines & LLM / AI Crawlers
 
 User-agent: *
@@ -45,4 +45,4 @@ User-agent: cohere-ai
 Allow: /
 
 # Sitemap & LLM Specs
-Sitemap: https://ais-pre-ontcval3fyfiygbamhvnev-251164783125.europe-west2.run.app/sitemap.xml
+Sitemap: https://cinejoy.to/sitemap.xml

@@ -1,9 +1,9 @@
 {
-  "name": "Popcorn — Watch Movies, Series & Trailers",
-  "short_name": "Popcorn",
-  "description": "Discover trending movies, TV shows, official trailers, and TMDB user ratings with Popcorn — the ultimate frosted glass cinema streaming experience.",
+  "name": "CineJoy — Watch Movies, Series & Trailers",
+  "short_name": "CineJoy",
+  "description": "Experience the joy of cinema with CineJoy. Discover trending movies, TV shows, official trailers, and TMDB user ratings.",
   "start_url": "/",
-  "id": "/",
+  "id": "https://cinejoy.to",
   "scope": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
@@ -33,21 +33,21 @@
       "short_name": "Movies",
       "description": "Browse top trending and popular blockbuster movies",
       "url": "/?tab=browse&type=movie",
-      "icons": [{ "src": "/popcorn.svg", "sizes": "any" }]
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     },
     {
       "name": "Popular TV Series",
       "short_name": "TV Shows",
       "description": "Explore binge-worthy top-rated TV series",
       "url": "/?tab=browse&type=tv",
-      "icons": [{ "src": "/popcorn.svg", "sizes": "any" }]
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     },
     {
       "name": "My Cinema Watchlist",
       "short_name": "Watchlist",
       "description": "View your saved movies and offline library",
       "url": "/?tab=library",
-      "icons": [{ "src": "/popcorn.svg", "sizes": "any" }]
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
     }
   ],
   "screenshots": [
@@ -56,7 +56,7 @@
       "sizes": "512x512",
       "type": "image/svg+xml",
       "form_factor": "wide",
-      "label": "Popcorn Home Screen"
+      "label": "CineJoy Home Screen"
     }
   ]
 }
