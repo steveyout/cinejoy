@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { MediaItem, NavTab, WatchlistItem, AppSettings } from '../types';
-import { setTmdbApiKey } from '../services/tmdb';
+import { setTmdbApiKey, tmdbService } from '../services/tmdb';
 import { triggerHaptic } from '../utils/haptics';
 import { applyDomainSEO } from '../utils/domainBranding';
 import { auth } from '../services/firebase';
@@ -148,11 +148,67 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [settings]);
 
-  // Dynamic Domain SEO Detection & Initial Analytics on Mount
+  // Dynamic Domain SEO Detection, Deep Linking & Initial Analytics on Mount
   useEffect(() => {
     applyDomainSEO();
-    trackPageView('home', 'CineJoy Movies & TV Stream');
+    trackPageView('home', 'Cinejoy Movies & TV Stream');
+
+    // Parse deep-linked URL parameters on initial client hydration
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const movieId = params.get('movie');
+      const tvId = params.get('tv');
+      const genericId = params.get('id');
+      const genericType = params.get('type') === 'tv' ? 'tv' : 'movie';
+      const watchParam = params.get('watch');
+      const tabParam = params.get('tab') as NavTab | null;
+
+      if (tabParam && ['home', 'browse', 'search', 'library'].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+
+      const targetId = movieId || tvId || genericId || (watchParam ? watchParam.replace(/^(movie|tv)-/, '') : null);
+      const targetType = tvId ? 'tv' : (movieId ? 'movie' : (genericId ? genericType : (watchParam?.startsWith('tv-') ? 'tv' : 'movie')));
+
+      if (targetId) {
+        const parsedId = parseInt(targetId, 10);
+        if (!isNaN(parsedId)) {
+          tmdbService.getDetails(parsedId, targetType).then((media) => {
+            if (media) {
+              if (watchParam) {
+                setActivePlayerMedia(media);
+              } else {
+                setSelectedMedia(media);
+              }
+            }
+          }).catch((err) => {
+            console.warn('[Hydration Deep Link Error]', err);
+          });
+        }
+      }
+    }
   }, []);
+
+  // Update browser URL query params whenever selectedMedia or activeTab changes for shareable SEO links
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const url = new URL(window.location.href);
+
+    if (selectedMedia) {
+      url.searchParams.set(selectedMedia.media_type === 'tv' ? 'tv' : 'movie', String(selectedMedia.id));
+      window.history.replaceState({}, '', url.toString());
+    } else {
+      url.searchParams.delete('movie');
+      url.searchParams.delete('tv');
+      url.searchParams.delete('id');
+      if (activeTab && activeTab !== 'home') {
+        url.searchParams.set('tab', activeTab);
+      } else {
+        url.searchParams.delete('tab');
+      }
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [selectedMedia, activeTab]);
 
   // Real-time Cloud Firestore Watchlist & Settings Sync with Firebase Auth
   useEffect(() => {

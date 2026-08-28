@@ -18,7 +18,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Volume2,
-  VolumeX
+  VolumeX,
+  Palette
 } from 'lucide-react';
 import { MediaItem, CastMember } from '../types';
 import { getImageUrl, getBackdropUrl, formatYear, formatDuration, tmdbService } from '../services/tmdb';
@@ -27,6 +28,7 @@ import { MovieCard } from './MovieCard';
 import { RatingRing } from './RatingRing';
 import { triggerHaptic } from '../utils/haptics';
 import { trackMediaView, trackTrailerPlay } from '../services/analytics';
+import { extractPosterPalette, DEFAULT_POSTER_PALETTE, PosterPalette } from '../utils/posterPalette';
 
 interface DetailModalProps {
   media: MediaItem;
@@ -51,6 +53,8 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
   const [activeTab, setActiveTab] = useState<'overview' | 'cast' | 'reviews'>('overview');
   const [isPlayingTrailer, setIsPlayingTrailer] = useState<boolean>(false);
   const [isTrailerMuted, setIsTrailerMuted] = useState<boolean>(true);
+  const [posterPalette, setPosterPalette] = useState<PosterPalette>(DEFAULT_POSTER_PALETTE);
+  const [isPaletteLoaded, setIsPaletteLoaded] = useState<boolean>(false);
   const castScrollRef = useRef<HTMLDivElement>(null);
   const similarScrollRef = useRef<HTMLDivElement>(null);
 
@@ -77,6 +81,27 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [onClose]);
+
+  // Dynamically extract color palette from the selected movie poster
+  useEffect(() => {
+    let isCurrent = true;
+    const posterUrl = getImageUrl(details.poster_path || media.poster_path, 'w500');
+    
+    if (posterUrl) {
+      extractPosterPalette(posterUrl).then((palette) => {
+        if (isCurrent) {
+          setPosterPalette(palette);
+          setIsPaletteLoaded(true);
+        }
+      }).catch((err) => {
+        console.warn('[Poster Tint] Color extraction error:', err);
+      });
+    }
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [details.poster_path, media.poster_path]);
 
   useEffect(() => {
     trackMediaView(media);
@@ -145,7 +170,11 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
 
   return (
     <div 
-      className="fixed inset-0 z-50 overflow-hidden bg-black/85 backdrop-blur-2xl flex items-center justify-center p-0 sm:p-4 md:p-6 animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 overflow-hidden bg-black/85 backdrop-blur-2xl flex items-center justify-center p-0 sm:p-4 md:p-6 animate-in fade-in duration-300"
+      style={{
+        background: isPaletteLoaded ? posterPalette.ambientRadial : undefined,
+        transition: 'background 0.8s ease-in-out'
+      }}
       onClick={onClose}
     >
       {/* Viewport Pinned Floating Close Button */}
@@ -160,11 +189,24 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
         <span className="hidden sm:inline text-xs font-semibold pr-1">Close</span>
       </button>
 
-      {/* Main Modal Card Container */}
+      {/* Main Modal Card Container with Dynamic Poster Palette Tint */}
       <div 
-        className="relative w-full max-w-4xl max-h-screen sm:max-h-[90vh] sm:rounded-3xl bg-[#050508]/95 border border-white/15 shadow-[0_25px_70px_rgba(0,0,0,0.9)] overflow-y-auto overflow-x-hidden text-white flex flex-col backdrop-blur-2xl scrollbar-none sm:overscroll-contain"
+        className="relative w-full max-w-4xl max-h-screen sm:max-h-[90vh] sm:rounded-3xl border shadow-[0_25px_70px_rgba(0,0,0,0.9)] overflow-y-auto overflow-x-hidden text-white flex flex-col backdrop-blur-2xl scrollbar-none sm:overscroll-contain transition-all duration-700 ease-out"
+        style={{
+          backgroundColor: isPaletteLoaded ? posterPalette.glassBackground : 'rgba(5, 5, 8, 0.95)',
+          borderColor: isPaletteLoaded ? posterPalette.glassBorder : 'rgba(255, 255, 255, 0.15)',
+          boxShadow: isPaletteLoaded ? posterPalette.glowShadow : '0 25px 70px rgba(0, 0, 0, 0.9)',
+        }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Ambient Top Glow Diffuser */}
+        <div 
+          className="absolute -top-32 left-1/2 -translate-x-1/2 w-3/4 h-64 rounded-full pointer-events-none opacity-40 blur-3xl transition-colors duration-1000"
+          style={{
+            backgroundColor: posterPalette.primaryHex
+          }}
+        />
+
         {/* Sticky Corner Close Button on Modal Card */}
         <div className="sticky top-3 right-3 z-40 self-end h-0 w-0 overflow-visible flex justify-end pr-4 pt-1 pointer-events-none">
           <button
@@ -232,7 +274,9 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                 alt={title}
                 className="w-full h-full object-cover filter brightness-90"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#050508] via-[#050508]/60 to-transparent" />
+              <div 
+                className="absolute inset-0 bg-gradient-to-t from-[#050508] via-[#050508]/60 to-transparent" 
+              />
               <div className="absolute inset-0 bg-gradient-to-r from-[#050508]/80 via-transparent to-[#050508]/40" />
 
               {/* Quick Play Trailer / Stream Floating Button on Hero */}
@@ -240,7 +284,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                 <button
                   onClick={() => setActivePlayerMedia(details)}
                   type="button"
-                  className="group flex items-center gap-2.5 px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl bg-white hover:bg-white/90 text-black font-bold text-xs sm:text-sm tracking-wide shadow-2xl shadow-black/80 transform hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                  style={{
+                    boxShadow: `0 10px 30px -5px ${posterPalette.primaryHex}60`
+                  }}
+                  className="group flex items-center gap-2.5 px-5 py-2.5 sm:px-6 sm:py-3 rounded-2xl bg-white hover:bg-white/90 text-black font-bold text-xs sm:text-sm tracking-wide shadow-2xl transform hover:scale-105 active:scale-95 transition-all cursor-pointer"
                 >
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/10 flex items-center justify-center">
                     <Play className="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current ml-0.5" />
@@ -258,7 +305,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                     type="button"
                     className="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 rounded-2xl bg-black/70 hover:bg-black/90 text-white border border-white/20 font-bold text-xs sm:text-sm tracking-wide shadow-2xl backdrop-blur-md transform hover:scale-105 active:scale-95 transition-all cursor-pointer"
                   >
-                    <Film className="w-4 h-4 text-amber-400" />
+                    <Film className="w-4 h-4" style={{ color: posterPalette.primaryHex }} />
                     <span>TRAILER</span>
                   </button>
                 )}
@@ -271,8 +318,14 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
         <div className="relative px-5 sm:px-8 pb-8 -mt-16 sm:-mt-20 z-10 flex-1">
           {/* Main Info Row */}
           <div className="flex flex-col sm:flex-row gap-6 items-start">
-            {/* Poster Card */}
-            <div className="relative w-32 sm:w-44 flex-shrink-0 aspect-[2/3] rounded-2xl overflow-hidden bg-white/5 border-2 border-white/20 shadow-2xl mx-auto sm:mx-0 select-none">
+            {/* Poster Card with Adaptive Border & Glow */}
+            <div 
+              className="relative w-32 sm:w-44 flex-shrink-0 aspect-[2/3] rounded-2xl overflow-hidden bg-white/5 border-2 shadow-2xl mx-auto sm:mx-0 select-none transition-all duration-700"
+              style={{
+                borderColor: isPaletteLoaded ? posterPalette.glassBorder : 'rgba(255, 255, 255, 0.2)',
+                boxShadow: isPaletteLoaded ? `0 15px 40px -10px ${posterPalette.primaryHex}70` : undefined,
+              }}
+            >
               <img
                 src={getImageUrl(details.poster_path, 'w500')}
                 alt={title}
@@ -290,12 +343,37 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                   <span className="px-2.5 py-0.5 rounded-full bg-white/10 text-white font-medium border border-white/10">
                     {details.media_type === 'tv' ? 'TV Series' : 'Movie'}
                   </span>
+
+                  {/* Adaptive Poster Palette Swatch Indicator */}
+                  {isPaletteLoaded && (
+                    <div 
+                      className="px-2.5 py-0.5 rounded-full text-white/90 text-[11px] font-medium border flex items-center gap-1.5 backdrop-blur-md shadow-sm transition-all animate-in fade-in"
+                      style={{
+                        backgroundColor: posterPalette.pillBackground,
+                        borderColor: posterPalette.glassBorder,
+                      }}
+                      title="Glassmorphic tint automatically synchronized to poster palette"
+                    >
+                      <Palette className="w-3 h-3" style={{ color: posterPalette.primaryHex }} />
+                      <span className="hidden xs:inline text-[10px] tracking-wider uppercase opacity-75">Palette:</span>
+                      <div className="flex items-center -space-x-1">
+                        {posterPalette.swatches.slice(0, 3).map((hex, idx) => (
+                          <span
+                            key={idx}
+                            className="w-2.5 h-2.5 rounded-full border border-black/40 shadow-xs inline-block"
+                            style={{ backgroundColor: hex }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {year && <span>{year}</span>}
                   {details.runtime ? (
                     <>
                       <span>•</span>
                       <span className="flex items-center gap-1">
-                        <Clock className="w-3.5 h-3.5 text-amber-400" />
+                        <Clock className="w-3.5 h-3.5" style={{ color: posterPalette.primaryHex }} />
                         {formatDuration(details.runtime)}
                       </span>
                     </>
@@ -313,7 +391,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                 </h1>
 
                 {details.tagline && (
-                  <p className="text-xs sm:text-sm text-amber-400/90 italic font-serif">
+                  <p 
+                    className="text-xs sm:text-sm italic font-serif"
+                    style={{ color: isPaletteLoaded ? posterPalette.accentHex : '#FBBF24' }}
+                  >
                     "{details.tagline}"
                   </p>
                 )}
@@ -338,7 +419,11 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                 <button
                   onClick={() => setActivePlayerMedia(details)}
                   type="button"
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-amber-500/20 active:scale-95 transition-all cursor-pointer"
+                  style={{
+                    background: posterPalette.buttonGradient,
+                    boxShadow: `0 8px 25px -4px ${posterPalette.primaryHex}60`,
+                  }}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-white text-xs sm:text-sm font-bold shadow-lg active:scale-95 transition-all cursor-pointer hover:brightness-110"
                 >
                   <Play className="w-4 h-4 fill-current" />
                   <span>Stream Full Title</span>
@@ -373,7 +458,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                         : 'bg-white/5 hover:bg-white/10 text-white border-white/10'
                     }`}
                   >
-                    <Film className="w-4 h-4 text-amber-400" />
+                    <Film className="w-4 h-4" style={{ color: posterPalette.primaryHex }} />
                     <span>{isPlayingTrailer ? 'Hide Trailer' : 'Watch Trailer'}</span>
                   </button>
                 )}
@@ -416,7 +501,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
             </div>
           </div>
 
-          {/* Sub Navigation Tabs (Overview, Cast, Reviews) */}
+          {/* Sub Navigation Tabs (Overview, Cast, Reviews) with Dynamic Active Indicator */}
           <div className="mt-8 border-b border-white/10 flex items-center gap-6 text-sm font-semibold">
             <button
               onClick={() => {
@@ -430,7 +515,13 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
             >
               Overview
               {activeTab === 'overview' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                <span 
+                  className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full transition-all duration-300"
+                  style={{
+                    backgroundColor: posterPalette.primaryHex,
+                    boxShadow: `0 0 10px ${posterPalette.primaryHex}`,
+                  }}
+                />
               )}
             </button>
             <button
@@ -445,7 +536,13 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
             >
               Cast & Characters {cast.length > 0 && `(${cast.length})`}
               {activeTab === 'cast' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                <span 
+                  className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full transition-all duration-300"
+                  style={{
+                    backgroundColor: posterPalette.primaryHex,
+                    boxShadow: `0 0 10px ${posterPalette.primaryHex}`,
+                  }}
+                />
               )}
             </button>
             <button
@@ -460,7 +557,13 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
             >
               Reviews
               {activeTab === 'reviews' && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-amber-500 rounded-full shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                <span 
+                  className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full transition-all duration-300"
+                  style={{
+                    backgroundColor: posterPalette.primaryHex,
+                    boxShadow: `0 0 10px ${posterPalette.primaryHex}`,
+                  }}
+                />
               )}
             </button>
           </div>
@@ -483,7 +586,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                   <div className="space-y-3 pt-2">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                        <Users className="w-4 h-4 text-amber-400" />
+                        <Users className="w-4 h-4" style={{ color: posterPalette.primaryHex }} />
                         <span>Starring Cast & Characters</span>
                         <span className="text-xs font-normal text-white/40">({cast.length})</span>
                       </h3>
@@ -519,10 +622,18 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                       {cast.map((actor) => (
                         <div
                           key={actor.id}
-                          className="flex-shrink-0 w-[130px] sm:w-[145px] p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/40 transition-all duration-300 group flex flex-col items-center text-center backdrop-blur-xl hover:shadow-[0_0_25px_rgba(245,158,11,0.18)] snap-start cursor-default select-none"
+                          className="flex-shrink-0 w-[130px] sm:w-[145px] p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all duration-300 group flex flex-col items-center text-center backdrop-blur-xl snap-start cursor-default select-none"
+                          style={{
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                          }}
                         >
                           {/* Cast Profile Photo */}
-                          <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-white/10 border-2 border-white/15 group-hover:border-amber-400/60 shadow-md transition-all duration-300 group-hover:scale-105 mb-2.5">
+                          <div 
+                            className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-white/10 border-2 border-white/15 shadow-md transition-all duration-300 group-hover:scale-105 mb-2.5"
+                            style={{
+                              borderColor: isPaletteLoaded ? `${posterPalette.primaryHex}40` : undefined,
+                            }}
+                          >
                             {actor.profile_path ? (
                               <img
                                 src={getImageUrl(actor.profile_path, 'w200')}
@@ -531,19 +642,27 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-amber-500/20 to-rose-500/20 text-white/60">
+                              <div 
+                                className="w-full h-full flex flex-col items-center justify-center text-white/60"
+                                style={{
+                                  background: `linear-gradient(135deg, ${posterPalette.primaryHex}30 0%, ${posterPalette.secondaryHex}20 100%)`
+                                }}
+                              >
                                 <Users className="w-6 h-6 text-white/40" />
                               </div>
                             )}
                           </div>
 
                           {/* Actor Real Name */}
-                          <h4 className="text-xs sm:text-sm font-bold text-white tracking-tight line-clamp-1 group-hover:text-amber-300 transition-colors w-full">
+                          <h4 className="text-xs sm:text-sm font-bold text-white tracking-tight line-clamp-1 group-hover:text-white transition-colors w-full">
                             {actor.name}
                           </h4>
 
                           {/* Character Name */}
-                          <p className="text-[11px] text-white/60 line-clamp-2 mt-1 w-full leading-tight font-medium">
+                          <p 
+                            className="text-[11px] line-clamp-2 mt-1 w-full leading-tight font-medium"
+                            style={{ color: isPaletteLoaded ? `${posterPalette.primaryHex}` : '#FBBF24' }}
+                          >
                             {actor.character ? actor.character : 'Cast Member'}
                           </p>
                         </div>
@@ -553,7 +672,12 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                 )}
 
                 {/* Stream Specs */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+                <div 
+                  className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md transition-colors"
+                  style={{
+                    borderColor: isPaletteLoaded ? `${posterPalette.primaryHex}25` : undefined,
+                  }}
+                >
                   <div>
                     <span className="text-[11px] uppercase tracking-wider text-white/40 font-semibold block">
                       Audio Track
@@ -566,7 +690,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                     <span className="text-[11px] uppercase tracking-wider text-white/40 font-semibold block">
                       Video Resolution
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-amber-400">
+                    <span 
+                      className="text-xs sm:text-sm font-bold"
+                      style={{ color: posterPalette.primaryHex }}
+                    >
                       4K HDR 60fps
                     </span>
                   </div>
@@ -582,7 +709,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                     <span className="text-[11px] uppercase tracking-wider text-white/40 font-semibold block">
                       Rating Community
                     </span>
-                    <span className="text-xs sm:text-sm font-bold text-amber-400">
+                    <span 
+                      className="text-xs sm:text-sm font-bold"
+                      style={{ color: posterPalette.primaryHex }}
+                    >
                       {details.vote_count.toLocaleString()} Votes
                     </span>
                   </div>
@@ -593,7 +723,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                   <div className="space-y-3 pt-2">
                     <div className="flex items-center justify-between">
                       <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-amber-400" />
+                        <Sparkles className="w-4 h-4" style={{ color: posterPalette.primaryHex }} />
                         <span>More Like This</span>
                       </h3>
 
@@ -641,7 +771,14 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                   <p className="text-xs text-white/60">
                     Showing top billing credits and starring cast members
                   </p>
-                  <span className="text-xs font-bold text-amber-400 bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20">
+                  <span 
+                    className="text-xs font-bold px-2.5 py-1 rounded-lg border"
+                    style={{
+                      color: posterPalette.primaryHex,
+                      backgroundColor: `${posterPalette.primaryHex}15`,
+                      borderColor: `${posterPalette.primaryHex}30`,
+                    }}
+                  >
                     {cast.length} Cast Members
                   </span>
                 </div>
@@ -651,9 +788,17 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                     cast.map((actor) => (
                       <div
                         key={actor.id}
-                        className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-400/30 transition-all backdrop-blur-md"
+                        className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 transition-all backdrop-blur-md"
+                        style={{
+                          borderColor: 'rgba(255, 255, 255, 0.1)',
+                        }}
                       >
-                        <div className="w-12 h-12 rounded-full bg-white/10 flex-shrink-0 overflow-hidden border border-white/15 flex items-center justify-center text-white/60 shadow-sm">
+                        <div 
+                          className="w-12 h-12 rounded-full bg-white/10 flex-shrink-0 overflow-hidden border border-white/15 flex items-center justify-center text-white/60 shadow-sm"
+                          style={{
+                            borderColor: `${posterPalette.primaryHex}40`
+                          }}
+                        >
                           {actor.profile_path ? (
                             <img
                               src={getImageUrl(actor.profile_path, 'w200')}
@@ -666,7 +811,10 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                         </div>
                         <div className="min-w-0 flex-1">
                           <h4 className="text-xs sm:text-sm font-bold text-white truncate">{actor.name}</h4>
-                          <p className="text-[11px] text-amber-300/80 truncate font-medium">
+                          <p 
+                            className="text-[11px] truncate font-medium"
+                            style={{ color: posterPalette.primaryHex }}
+                          >
                             {actor.character || 'Cast Member'}
                           </p>
                         </div>
@@ -686,11 +834,22 @@ export const DetailModal: React.FC<DetailModalProps> = ({ media, onClose }) => {
                     <div
                       key={rev.id}
                       className="p-4 rounded-xl bg-white/5 border border-white/10 space-y-1.5 backdrop-blur-md"
+                      style={{
+                        borderColor: `${posterPalette.primaryHex}20`
+                      }}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-indigo-400">{rev.author}</span>
+                        <span 
+                          className="text-xs font-bold"
+                          style={{ color: posterPalette.secondaryHex }}
+                        >
+                          {rev.author}
+                        </span>
                         {rev.rating && (
-                          <span className="text-xs font-semibold text-amber-400 flex items-center gap-1">
+                          <span 
+                            className="text-xs font-semibold flex items-center gap-1"
+                            style={{ color: posterPalette.primaryHex }}
+                          >
                             <Star className="w-3 h-3 fill-current" /> {rev.rating}/10
                           </span>
                         )}

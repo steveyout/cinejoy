@@ -24,12 +24,12 @@ export interface DomainBrandConfig {
 export const getDomainBranding = (): DomainBrandConfig => {
   if (typeof window === 'undefined') {
     return {
-      brandName: 'CineJoy',
-      brandShortName: 'CineJoy',
+      brandName: 'Cinejoy',
+      brandShortName: 'Cinejoy',
       brandSub: 'CINEMA JOY',
-      documentTitle: 'CineJoy — Watch Movies & TV Series Online Free HD',
-      description: 'Watch movies and TV series online in HD for free on CineJoy (cinejoy.to). Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.',
-      keywords: 'CineJoy, cinejoy.to, Cine Joy, cinema joy, watch movies online, stream free movies, HD tv shows, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
+      documentTitle: 'Cinejoy — Watch Free Movies & TV Shows Online HD | Cinejoy Official',
+      description: 'Watch latest movies and full TV shows online in 1080p HD for free on Cinejoy (cinejoy.to). Discover trending box office movies, popular TV series, 4K trailers, and ratings on Cinejoy.',
+      keywords: 'Cinejoy, Cinejoy to, Cinejoy official, Cinejoy free movies, Cinejoy movie streaming, watch free movies online, watch movies online free, free movie streaming sites, watch hd movies online, free full movies online, watch tv shows online free, stream tv series, free 1080p movies, 4k streaming movies, latest movies online free, box office movies free, no sign up movie streaming, free cinema streaming, soap2day alternative, fmovies alternative, 123movies alternative, flixhq alternative',
       domain: 'cinejoy.to',
       logoType: 'cinejoy',
       accentGradient: 'from-amber-400 via-rose-500 to-purple-600',
@@ -60,7 +60,7 @@ export const getDomainBranding = (): DomainBrandConfig => {
     };
   }
 
-  // 2. CineJoy Branding (cinejoy.online, cinejoy.to, cunejo.online, or default)
+  // 2. Cinejoy Branding (cinejoy.online, cinejoy.to, cunejo.online, or default)
   if (
     brandParam === 'cinejoy' ||
     hostname.includes('cinejoy') ||
@@ -71,12 +71,12 @@ export const getDomainBranding = (): DomainBrandConfig => {
     const isOnlineDomain = hostname.includes('cinejoy.online') || hostname.includes('cunejo.online');
     const targetDomain = isOnlineDomain ? 'cinejoy.online' : 'cinejoy.to';
     return {
-      brandName: 'CineJoy',
-      brandShortName: 'CineJoy',
+      brandName: 'Cinejoy',
+      brandShortName: 'Cinejoy',
       brandSub: 'CINEMA JOY',
-      documentTitle: `CineJoy — Watch Movies & TV Series Online Free HD`,
-      description: `Watch movies and TV series online in HD for free on CineJoy (${targetDomain}). Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.`,
-      keywords: `CineJoy, ${targetDomain}, Cine Joy, cinema joy, watch movies online, stream free movies, HD tv shows, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies`,
+      documentTitle: `Cinejoy — Watch Free Movies & TV Shows Online HD | Cinejoy Official`,
+      description: `Watch latest movies and full TV shows online in 1080p HD for free on Cinejoy (${targetDomain}). Discover trending box office movies, popular TV series, cast details, 4K trailers, and ratings on Cinejoy.`,
+      keywords: `Cinejoy, ${targetDomain}, Cinejoy to, Cinejoy official, Cinejoy free movies, Cinejoy movie streaming, watch free movies online, watch movies online free, free movie streaming sites, watch hd movies online, free full movies online, watch tv shows online free, stream tv series, free 1080p movies, 4k streaming movies, latest movies online free, box office movies free, no sign up movie streaming, free cinema streaming, soap2day alternative, fmovies alternative, 123movies alternative, flixhq alternative`,
       domain: targetDomain,
       logoType: 'cinejoy',
       accentGradient: 'from-amber-400 via-rose-500 to-purple-600',
@@ -116,14 +116,14 @@ export const getDomainBranding = (): DomainBrandConfig => {
     };
   }
 
-  // Default fallback (CineJoy - cinejoy.to)
+  // Default fallback (Cinejoy - cinejoy.to)
   return {
-    brandName: 'CineJoy',
-    brandShortName: 'CineJoy',
+    brandName: 'Cinejoy',
+    brandShortName: 'Cinejoy',
     brandSub: 'CINEMA JOY',
-    documentTitle: 'CineJoy — Watch Movies & TV Series Online Free HD',
-    description: 'Watch movies and TV series online in HD for free on CineJoy (cinejoy.to). Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings in frosted glass elegance.',
-    keywords: 'CineJoy, cinejoy.to, Cine Joy, cinema joy, watch movies online, stream free movies, HD tv shows, movies, cinema, TV shows, watch trailers, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
+    documentTitle: 'Cinejoy — Watch Free Movies & TV Shows Online HD | Cinejoy Official',
+    description: 'Watch latest movies and full TV shows online in 1080p HD for free on Cinejoy (cinejoy.to). Discover trending box office movies, popular TV series, cast details, 4K trailers, and ratings on Cinejoy.',
+    keywords: 'Cinejoy, Cinejoy to, Cinejoy official, Cinejoy free movies, Cinejoy movie streaming, watch free movies online, watch movies online free, free movie streaming sites, watch hd movies online, free full movies online, watch tv shows online free, stream tv series, free 1080p movies, 4k streaming movies, latest movies online free, box office movies free, no sign up movie streaming, free cinema streaming, soap2day alternative, fmovies alternative, 123movies alternative, flixhq alternative',
     domain: 'cinejoy.to',
     logoType: 'cinejoy',
     accentGradient: 'from-amber-400 via-rose-500 to-purple-600',

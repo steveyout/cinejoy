@@ -1,7 +1,7 @@
 {
-  "name": "CineJoy — Watch Movies, Series & Trailers",
-  "short_name": "CineJoy",
-  "description": "Experience the joy of cinema with CineJoy. Discover trending movies, TV shows, official trailers, and TMDB user ratings.",
+  "name": "Cinejoy — Watch Free Movies & TV Shows",
+  "short_name": "Cinejoy",
+  "description": "Watch movies and TV series online in HD for free on Cinejoy. Discover trending box office movies, popular TV shows, 4K official trailers, and TMDB user ratings.",
   "start_url": "/",
   "id": "https://cinejoy.to",
   "scope": "/",

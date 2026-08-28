@@ -13,10 +13,14 @@ export default defineConfig(() => {
     },
     server: {
       allowedHosts: [
-        'flixhq.ink',
-        '.flixhq.ink',
+        'cinejoy.to',
+        '.cinejoy.to',
         'cinejoy.online',
         '.cinejoy.online',
+        'flixhq.to',
+        '.flixhq.to',
+        'flixhq.ink',
+        '.flixhq.ink',
         'popcornmovies.online',
         '.popcornmovies.online',
         'bingebox.work',
