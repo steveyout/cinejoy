@@ -189,7 +189,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, []);
 
-  // Update browser URL query params whenever selectedMedia or activeTab changes for shareable SEO links
+  // Update browser URL query params and dynamic SEO tags whenever selectedMedia or activeTab changes
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const url = new URL(window.location.href);
@@ -197,6 +197,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     if (selectedMedia) {
       url.searchParams.set(selectedMedia.media_type === 'tv' ? 'tv' : 'movie', String(selectedMedia.id));
       window.history.replaceState({}, '', url.toString());
+      applyDomainSEO(selectedMedia, activeTab);
     } else {
       url.searchParams.delete('movie');
       url.searchParams.delete('tv');
@@ -207,6 +208,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         url.searchParams.delete('tab');
       }
       window.history.replaceState({}, '', url.toString());
+      applyDomainSEO(null, activeTab);
     }
   }, [selectedMedia, activeTab]);
 

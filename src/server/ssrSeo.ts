@@ -69,43 +69,55 @@ interface DomainBrand {
   defaultTitle: string;
   defaultDescription: string;
   defaultKeywords: string;
+  ogDescription?: string;
+  ogImageAlt?: string;
 }
 
-function resolveDomainBrand(hostname: string): DomainBrand {
+function resolveDomainBrand(hostname: string, reqUrl?: string): DomainBrand {
   const host = hostname.toLowerCase();
 
-  // 1. FlixHQ Domains (flixhq.ink, flixhq.to, flixhq)
-  if (host.includes('flixhq')) {
+  let brandParam = '';
+  if (reqUrl) {
+    try {
+      const u = new URL(reqUrl, 'https://localhost');
+      brandParam = (u.searchParams.get('brand') || '').toLowerCase();
+    } catch {
+      // ignore
+    }
+  }
+
+  // 1. FlixHQ Domains (flixhq.to, flixhq.ink, flixhq, or query ?brand=flixhq)
+  // Maps flixhq.ink directly to flixhq.to
+  if (
+    brandParam === 'flixhq' ||
+    host.includes('flixhq') ||
+    host.includes('flixhq.to') ||
+    host.includes('flixhq.ink') ||
+    host.includes('flihq.to')
+  ) {
     return {
       brandName: 'FlixHQ',
       brandShortName: 'FlixHQ',
       domain: 'flixhq.to',
-      defaultTitle: 'FlixHQ — Watch Movies & TV Series Online Free HD | FlixHQ Official',
-      defaultDescription: 'Watch movies and TV series online in HD for free on FlixHQ (flixhq.to). Discover top trending movies, popular TV shows, 4K trailers, and ratings on FlixHQ.',
-      defaultKeywords: 'FlixHQ, flixhq.to, flixhq.ink, FlixHQ official, watch movies online free, free movie streaming sites, watch hd movies online, free full movies online, stream tv series, free 1080p movies, soap2day alternative, fmovies alternative, 123movies alternative',
+      defaultTitle: 'FlixHQ - Watch TV Shows Online Free, Watch Movies Online Free',
+      defaultDescription: 'FlixHQ is a free movies streaming site with zero ads. We let you watch movies online without having to register or paying, with over 10000 movies and TV-Series.',
+      defaultKeywords: 'watch movies online free, watch movies online, free movies online, watch full movies online, free movie streaming, watch tv shows online, watch tv shows online free, flixhq, flixhq.to, flixhq movies, watch series online free, stream hd movies, free movies streaming site',
+      ogDescription: 'FlixHQ is a free movies streaming site with zero ads. We let you watch movies online without having to register or paying, with over 10000 movies and TV-Series.',
+      ogImageAlt: 'FlixHQ Cinema Discovery App',
     };
   }
 
-  // 2. Cinejoy Online
-  if (host.includes('cinejoy.online') || host.includes('cunejo.online')) {
-    return {
-      brandName: 'Cinejoy',
-      brandShortName: 'Cinejoy',
-      domain: 'cinejoy.online',
-      defaultTitle: 'Cinejoy — Watch Free Movies & TV Shows Online HD | Cinejoy Official',
-      defaultDescription: 'Watch latest movies and full TV shows online in 1080p HD for free on Cinejoy (cinejoy.online). Discover trending box office movies, popular TV series, cast details, 4K trailers, and ratings on Cinejoy.',
-      defaultKeywords: 'Cinejoy, cinejoy.online, Cinejoy official, Cinejoy free movies, watch free movies online, watch movies online free, free movie streaming sites, watch hd movies online, stream tv series, soap2day alternative, fmovies alternative, 123movies alternative',
-    };
-  }
-
-  // 3. Default to Cinejoy (cinejoy.to)
+  // 2. Cinejoy Domains (cinejoy.to, cinejoy.online, cunejo.online, or default)
+  // Maps cinejoy.online and all aliases directly to cinejoy.to
   return {
     brandName: 'Cinejoy',
     brandShortName: 'Cinejoy',
     domain: 'cinejoy.to',
-    defaultTitle: 'Cinejoy — Watch Free Movies & TV Shows Online HD | Cinejoy Official',
-    defaultDescription: 'Watch latest movies and full TV shows online in 1080p HD for free on Cinejoy (cinejoy.to). Discover trending box office movies, popular TV series, cast details, 4K trailers, and ratings on Cinejoy.',
-    defaultKeywords: 'Cinejoy, Cinejoy to, Cinejoy official, Cinejoy free movies, Cinejoy movie streaming, watch free movies online, watch movies online free, free movie streaming sites, watch hd movies online, free full movies online, watch tv shows online free, stream tv series, free 1080p movies, 4k streaming movies, latest movies online free, box office movies free, no sign up movie streaming, free cinema streaming, soap2day alternative, fmovies alternative, 123movies alternative, flixhq alternative',
+    defaultTitle: 'Cinejoy',
+    defaultDescription: 'Stream Thousands of Movies & TV Shows Free on Cinejoy.',
+    defaultKeywords: 'cinejoy, cinejoy.to, watch free movies, free movies to watch online, watch movies online free, free movies streaming, free movies full, free movies download, watch movies hd, movies to watch, plus, ver, assistir, filmes, series, seriados, online, gratis, torrent, legendado, dublados, Series, HD, 720p, 1080p, 4k, cinema',
+    ogDescription: 'Watch Free Movies & TV Shows Online, for free.',
+    ogImageAlt: 'Cinejoy - Watch Free Movies & TV Shows Online',
   };
 }
 
@@ -123,7 +135,7 @@ export async function generateSsrSeoHtml(
   reqUrl: string,
   hostname: string
 ): Promise<string> {
-  const brand = resolveDomainBrand(hostname);
+  const brand = resolveDomainBrand(hostname, reqUrl);
   const parsedUrl = new URL(reqUrl, `https://${brand.domain}`);
   const pathname = parsedUrl.pathname;
   const searchParams = parsedUrl.searchParams;
@@ -191,13 +203,40 @@ export async function generateSsrSeoHtml(
         ? `${IMAGE_BASE_URL}/w500${media.poster_path}` 
         : backdropUrl;
 
-      const pageTitle = `Watch ${title}${yearSuffix} Online Free HD | ${brand.brandName} Official`;
+      const isFlixHQ = brand.brandName === 'FlixHQ' || brand.domain === 'flixhq.to';
+      const isCinejoy = brand.brandName === 'Cinejoy' || brand.domain === 'cinejoy.to';
+
+      const pageTitle = isFlixHQ
+        ? `Watch ${title}${yearSuffix} Online Free on FlixHQ`
+        : isCinejoy
+          ? `Watch ${title}${yearSuffix} Online Free on Cinejoy`
+          : `Watch ${title}${yearSuffix} Online Free HD | ${brand.brandName} Official`;
       const cleanOverview = media.overview ? media.overview.replace(/\s+/g, ' ').trim() : '';
       const truncatedOverview = cleanOverview.length > 150 ? cleanOverview.slice(0, 147) + '...' : cleanOverview;
       
-      const pageDescription = `Watch ${title}${yearSuffix} online in full 1080p HD on ${brand.brandName} (${brand.domain}). ${genres ? `Genres: ${genres}. ` : ''}${truncatedOverview || `Stream ${title} for free with fast servers.`}`;
+      const pageDescription = isFlixHQ
+        ? (mediaType === 'tv'
+            ? `Watch ${title} online free in full HD on FlixHQ. Stream all seasons and episodes of ${title} with zero ads on flixhq.to. ${truncatedOverview}`
+            : `Watch ${title}${yearSuffix} online free in full HD on FlixHQ. ${truncatedOverview || `Stream ${title} without registration with zero ads on flixhq.to.`}`)
+        : isCinejoy
+          ? (mediaType === 'tv'
+              ? `Stream ${title} on Cinejoy for free. Watch Free Movies & TV Shows Online, for free. ${truncatedOverview}`
+              : `Stream ${title}${yearSuffix} on Cinejoy for free. Watch Free Movies & TV Shows Online, for free. ${truncatedOverview}`)
+          : `Watch ${title}${yearSuffix} online in full 1080p HD on ${brand.brandName} (${brand.domain}). ${genres ? `Genres: ${genres}. ` : ''}${truncatedOverview || `Stream ${title} for free with fast servers.`}`;
+
+      const pageOgDescription = isCinejoy
+        ? (mediaType === 'tv'
+            ? `Stream ${title} on Cinejoy for free. Watch Free Movies & TV Shows Online, for free.`
+            : `Stream ${title}${yearSuffix} on Cinejoy for free. Watch Free Movies & TV Shows Online, for free.`)
+        : pageDescription;
       
-      const pageKeywords = `${title}, watch ${title} online free, stream ${title} free, ${title} full ${mediaType === 'movie' ? 'movie' : 'episodes'}, ${title} HD 1080p, ${title}${yearSuffix}, ${brand.brandName}, ${genres}, watch free movies online, free movie streaming sites`;
+      const pageKeywords = isFlixHQ
+        ? (mediaType === 'tv'
+            ? `watch ${title} online free, stream ${title} tv show, ${title} full episodes, ${title} all seasons, flixhq, flixhq.to, watch tv shows online free`
+            : `watch ${title} online free, ${title} full movie, stream ${title} hd, ${title} free streaming, ${title}${yearSuffix}, flixhq, flixhq.to, watch movies online free`)
+        : isCinejoy
+          ? `cinejoy, cinejoy.to, watch ${title} online free, stream ${title}, ${title} free streaming, ${title}${yearSuffix}, watch free movies, free movies to watch online, watch movies online free`
+          : `${title}, watch ${title} online free, stream ${title} free, ${title} full ${mediaType === 'movie' ? 'movie' : 'episodes'}, ${title} HD 1080p, ${title}${yearSuffix}, ${brand.brandName}, ${genres}, watch free movies online, free movie streaming sites`;
       
       const canonicalUrl = `https://${brand.domain}/?${mediaType}=${mediaId}`;
 
@@ -267,14 +306,20 @@ export async function generateSsrSeoHtml(
         ]
       };
 
+      const mediaOgImageAlt = isCinejoy
+        ? 'Cinejoy - Watch Free Movies & TV Shows Online'
+        : (isFlixHQ ? 'FlixHQ Cinema Discovery App' : `${title} Poster on ${brand.brandName}`);
+
       return replaceHtmlHeadMetadata(rawHtml, {
         title: pageTitle,
         description: pageDescription,
+        ogDescription: pageOgDescription,
+        twitterDescription: pageOgDescription,
         keywords: pageKeywords,
         canonicalUrl,
         ogType: mediaType === 'movie' ? 'video.movie' : 'video.tv_show',
         ogImage: backdropUrl,
-        ogImageAlt: `${title} Poster on ${brand.brandName}`,
+        ogImageAlt: mediaOgImageAlt,
         brand,
         structuredData: [mediaSchema, breadcrumbSchema]
       });
@@ -285,41 +330,108 @@ export async function generateSsrSeoHtml(
   const tab = searchParams.get('tab') || (pathname.includes('/browse') ? 'browse' : (pathname.includes('/search') ? 'search' : (pathname.includes('/library') ? 'library' : 'home')));
   const filterType = searchParams.get('type');
 
+  const isFlixHQ = brand.brandName === 'FlixHQ' || brand.domain === 'flixhq.to';
+  const isCinejoy = brand.brandName === 'Cinejoy' || brand.domain === 'cinejoy.to';
+
   let pageTitle = brand.defaultTitle;
   let pageDescription = brand.defaultDescription;
+  let pageOgDescription = brand.ogDescription || brand.defaultDescription;
   let pageKeywords = brand.defaultKeywords;
   let canonicalUrl = `https://${brand.domain}/`;
 
   if (tab === 'browse') {
     if (filterType === 'movie') {
-      pageTitle = `Watch Free Movies Online HD — Trending & Box Office | ${brand.brandName}`;
-      pageDescription = `Browse and watch thousands of top trending, blockbuster, and top-rated HD movies online for free on ${brand.brandName} (${brand.domain}). Filter by genre, rating, and year.`;
-      pageKeywords = `watch free movies online, browse movies, top 10 movies, free HD movie streaming, ${brand.brandName} movies, action movies free, comedy movies free, horror movies free`;
+      pageTitle = isFlixHQ
+        ? 'Watch Free Movies Online in Full HD on FlixHQ - FlixHQ.to'
+        : isCinejoy
+          ? 'Cinejoy - Watch Free Movies & TV Shows Online'
+          : `Watch Free Movies Online HD — Trending & Box Office | ${brand.brandName}`;
+      pageDescription = isFlixHQ
+        ? 'Browse and watch movies online for free on FlixHQ. High quality streaming with zero ads and no registration on flixhq.to.'
+        : isCinejoy
+          ? 'Stream Thousands of Movies & TV Shows Free on Cinejoy. Watch Free Movies & TV Shows Online, for free.'
+          : `Browse and watch thousands of top trending, blockbuster, and top-rated HD movies online for free on ${brand.brandName} (${brand.domain}). Filter by genre, rating, and year.`;
+      pageOgDescription = isCinejoy ? 'Watch Free Movies & TV Shows Online, for free.' : pageDescription;
+      pageKeywords = isFlixHQ
+        ? 'watch free movies online, free hd movies, flixhq movies, browse movies online, watch full movies free, flixhq.to'
+        : isCinejoy
+          ? 'cinejoy, cinejoy.to, watch free movies, free movies to watch online, watch movies online free, free movies streaming, free movies full, watch movies hd, movies to watch'
+          : `watch free movies online, browse movies, top 10 movies, free HD movie streaming, ${brand.brandName} movies, action movies free, comedy movies free, horror movies free`;
       canonicalUrl = `https://${brand.domain}/?tab=browse&type=movie`;
     } else if (filterType === 'tv') {
-      pageTitle = `Watch TV Shows Online Free — Popular Drama & Series HD | ${brand.brandName}`;
-      pageDescription = `Stream popular TV shows, binge-worthy series, and network seasons online in HD for free on ${brand.brandName} (${brand.domain}).`;
-      pageKeywords = `watch tv shows online free, stream tv series, free tv show streaming, binge series, ${brand.brandName} tv shows, tv episodes free online`;
+      pageTitle = isFlixHQ
+        ? 'Watch Free TV Series Online in Full HD on FlixHQ - FlixHQ.to'
+        : isCinejoy
+          ? 'Cinejoy - Watch Free Movies & TV Shows Online'
+          : `Watch TV Shows Online Free — Popular Drama & Series HD | ${brand.brandName}`;
+      pageDescription = isFlixHQ
+        ? 'Browse and watch TV shows and full series online for free on FlixHQ. Stream all seasons and episodes with zero ads on flixhq.to.'
+        : isCinejoy
+          ? 'Stream Thousands of Movies & TV Shows Free on Cinejoy. Watch Free Movies & TV Shows Online, for free.'
+          : `Stream popular TV shows, binge-worthy series, and network seasons online in HD for free on ${brand.brandName} (${brand.domain}).`;
+      pageOgDescription = isCinejoy ? 'Watch Free Movies & TV Shows Online, for free.' : pageDescription;
+      pageKeywords = isFlixHQ
+        ? 'watch tv shows online free, free tv series, flixhq tv shows, watch series online free, stream full episodes, flixhq.to'
+        : isCinejoy
+          ? 'cinejoy, cinejoy.to, watch free movies, free movies to watch online, watch movies online free, free movies streaming, watch series online free, stream full episodes'
+          : `watch tv shows online free, stream tv series, free tv show streaming, binge series, ${brand.brandName} tv shows, tv episodes free online`;
       canonicalUrl = `https://${brand.domain}/?tab=browse&type=tv`;
     } else {
-      pageTitle = `Discover Movies & TV Shows Online Free | ${brand.brandName}`;
-      pageDescription = `Explore high definition movies and TV shows for free on ${brand.brandName} (${brand.domain}) with instant streaming and TMDB ratings.`;
+      pageTitle = isFlixHQ
+        ? 'Watch Free Movies and TV Shows Online on FlixHQ - FlixHQ.to'
+        : isCinejoy
+          ? 'Cinejoy - Watch Free Movies & TV Shows Online'
+          : `Discover Movies & TV Shows Online Free | ${brand.brandName}`;
+      pageDescription = isFlixHQ
+        ? 'Browse full library of movies and TV shows online for free on FlixHQ. Zero ads, no account needed on flixhq.to.'
+        : isCinejoy
+          ? 'Stream Thousands of Movies & TV Shows Free on Cinejoy. Watch Free Movies & TV Shows Online, for free.'
+          : `Explore high definition movies and TV shows for free on ${brand.brandName} (${brand.domain}) with instant streaming and TMDB ratings.`;
+      pageOgDescription = isCinejoy ? 'Watch Free Movies & TV Shows Online, for free.' : pageDescription;
+      pageKeywords = isCinejoy
+        ? 'cinejoy, cinejoy.to, watch free movies, free movies to watch online, watch movies online free, free movies streaming, free movies full, watch movies hd, movies to watch'
+        : pageKeywords;
       canonicalUrl = `https://${brand.domain}/?tab=browse`;
     }
   } else if (tab === 'search') {
     const query = searchParams.get('q') || '';
     if (query) {
-      pageTitle = `Watch "${query}" Online Free HD | ${brand.brandName} Search`;
-      pageDescription = `Search results for "${query}" on ${brand.brandName}. Watch matching full movies and TV episodes in HD for free with zero ads.`;
+      pageTitle = isFlixHQ
+        ? `Watch "${query}" Online Free on FlixHQ`
+        : isCinejoy
+          ? `Watch "${query}" Online Free on Cinejoy`
+          : `Watch "${query}" Online Free HD | ${brand.brandName} Search`;
+      pageDescription = isFlixHQ
+        ? `Watch "${query}" online for free in HD on FlixHQ with zero ads. Stream full movies and TV shows matching "${query}" on flixhq.to.`
+        : isCinejoy
+          ? `Stream "${query}" and thousands of movies & TV shows free on Cinejoy. Watch Free Movies & TV Shows Online, for free.`
+          : `Search results for "${query}" on ${brand.brandName}. Watch matching full movies and TV episodes in HD for free with zero ads.`;
+      pageOgDescription = isCinejoy ? `Stream "${query}" and thousands of movies & TV shows free on Cinejoy. Watch Free Movies & TV Shows Online, for free.` : pageDescription;
+      pageKeywords = isCinejoy ? `cinejoy, cinejoy.to, watch ${query} online free, stream ${query}, watch free movies, free movies to watch online` : pageKeywords;
       canonicalUrl = `https://${brand.domain}/?tab=search&q=${encodeURIComponent(query)}`;
     } else {
-      pageTitle = `Search Movies & TV Series Online Free HD | ${brand.brandName}`;
-      pageDescription = `Search over 50,000+ movies, TV series, actors, and directors on ${brand.brandName} (${brand.domain}). Instant search with 1080p streaming.`;
+      pageTitle = isFlixHQ
+        ? 'Search Movies & TV Series Online Free - FlixHQ'
+        : isCinejoy
+          ? 'Search Movies & TV Shows - Cinejoy'
+          : `Search Movies & TV Series Online Free HD | ${brand.brandName}`;
+      pageDescription = isFlixHQ
+        ? 'Search over 10,000+ movies and TV series online for free on FlixHQ with zero ads on flixhq.to.'
+        : isCinejoy
+          ? 'Stream Thousands of Movies & TV Shows Free on Cinejoy. Search over 50,000+ movies and TV series.'
+          : `Search over 50,000+ movies, TV series, actors, and directors on ${brand.brandName} (${brand.domain}). Instant search with 1080p streaming.`;
+      pageOgDescription = isCinejoy ? 'Watch Free Movies & TV Shows Online, for free.' : pageDescription;
+      pageKeywords = isCinejoy ? 'cinejoy, cinejoy.to, watch free movies, free movies to watch online, search movies online, stream hd movies' : pageKeywords;
       canonicalUrl = `https://${brand.domain}/?tab=search`;
     }
   } else if (tab === 'library') {
-    pageTitle = `My Cinema Library & Watchlist | ${brand.brandName}`;
-    pageDescription = `Access your personal cinema watchlist, favorites collection, and offline playback items on ${brand.brandName}.`;
+    pageTitle = isFlixHQ
+      ? 'My Watchlist & Favorites | FlixHQ'
+      : `My Cinema Library & Watchlist | ${brand.brandName}`;
+    pageDescription = isFlixHQ
+      ? 'Access your personal movie and TV series watchlist, favorites collection, and history on FlixHQ.'
+      : `Access your personal cinema watchlist, favorites collection, and offline playback items on ${brand.brandName}.`;
+    pageOgDescription = pageDescription;
     canonicalUrl = `https://${brand.domain}/?tab=library`;
   }
 
@@ -360,11 +472,13 @@ export async function generateSsrSeoHtml(
   return replaceHtmlHeadMetadata(rawHtml, {
     title: pageTitle,
     description: pageDescription,
+    ogDescription: pageOgDescription,
+    twitterDescription: pageOgDescription,
     keywords: pageKeywords,
     canonicalUrl,
     ogType: 'website',
     ogImage: `https://${brand.domain}/favicon.svg`,
-    ogImageAlt: `${brand.brandName} Cinema Discovery App`,
+    ogImageAlt: brand.ogImageAlt || `${brand.brandName} Cinema Discovery App`,
     brand,
     structuredData: [websiteSchema, webAppSchema]
   });
@@ -378,12 +492,17 @@ interface SeoReplacements {
   ogType: string;
   ogImage: string;
   ogImageAlt: string;
+  ogDescription?: string;
+  twitterDescription?: string;
   brand: DomainBrand;
   structuredData: object[];
 }
 
 function replaceHtmlHeadMetadata(html: string, opts: SeoReplacements): string {
   let output = html;
+
+  const ogDesc = opts.ogDescription || opts.description;
+  const twitterDesc = opts.twitterDescription || opts.description;
 
   // Replace <title>...</title>
   output = output.replace(/<title>.*?<\/title>/is, `<title>${escapeHtml(opts.title)}</title>`);
@@ -396,6 +515,11 @@ function replaceHtmlHeadMetadata(html: string, opts: SeoReplacements): string {
 
   // Replace meta keywords
   output = output.replace(/<meta\s+name=["']keywords["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="keywords" content="${escapeHtml(opts.keywords)}" />`);
+
+  // Replace author
+  if (output.includes('name="author"')) {
+    output = output.replace(/<meta\s+name=["']author["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="author" content="${escapeHtml(opts.brand.brandName)}" />`);
+  }
 
   // Replace canonical link
   if (output.includes('rel="canonical"')) {
@@ -410,7 +534,7 @@ function replaceHtmlHeadMetadata(html: string, opts: SeoReplacements): string {
 
   // Replace OpenGraph meta
   output = output.replace(/<meta\s+property=["']og:title["']\s+content=["'].*?["']\s*\/?>/is, `<meta property="og:title" content="${escapeHtml(opts.title)}" />`);
-  output = output.replace(/<meta\s+property=["']og:description["']\s+content=["'].*?["']\s*\/?>/is, `<meta property="og:description" content="${escapeHtml(opts.description)}" />`);
+  output = output.replace(/<meta\s+property=["']og:description["']\s+content=["'].*?["']\s*\/?>/is, `<meta property="og:description" content="${escapeHtml(ogDesc)}" />`);
   output = output.replace(/<meta\s+property=["']og:url["']\s+content=["'].*?["']\s*\/?>/is, `<meta property="og:url" content="${escapeHtml(opts.canonicalUrl)}" />`);
   output = output.replace(/<meta\s+property=["']og:site_name["']\s+content=["'].*?["']\s*\/?>/is, `<meta property="og:site_name" content="${escapeHtml(opts.brand.brandName)}" />`);
   output = output.replace(/<meta\s+property=["']og:type["']\s+content=["'].*?["']\s*\/?>/is, `<meta property="og:type" content="${escapeHtml(opts.ogType)}" />`);
@@ -419,8 +543,9 @@ function replaceHtmlHeadMetadata(html: string, opts: SeoReplacements): string {
 
   // Replace Twitter meta
   output = output.replace(/<meta\s+name=["']twitter:title["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="twitter:title" content="${escapeHtml(opts.title)}" />`);
-  output = output.replace(/<meta\s+name=["']twitter:description["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="twitter:description" content="${escapeHtml(opts.description)}" />`);
+  output = output.replace(/<meta\s+name=["']twitter:description["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="twitter:description" content="${escapeHtml(twitterDesc)}" />`);
   output = output.replace(/<meta\s+name=["']twitter:image["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="twitter:image" content="${escapeHtml(opts.ogImage)}" />`);
+  output = output.replace(/<meta\s+name=["']twitter:image:alt["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="twitter:image:alt" content="${escapeHtml(opts.ogImageAlt)}" />`);
   output = output.replace(/<meta\s+name=["']twitter:domain["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="twitter:domain" content="${escapeHtml(opts.brand.domain)}" />`);
   output = output.replace(/<meta\s+name=["']twitter:url["']\s+content=["'].*?["']\s*\/?>/is, `<meta name="twitter:url" content="${escapeHtml(opts.canonicalUrl)}" />`);
 

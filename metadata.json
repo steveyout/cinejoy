@@ -1,6 +1,6 @@
 {
-  "name": "cinejoy",
-  "description": "A glassmorphic movie streaming and discovery app with Express SSR SEO metadata engine, TMDB media indexing, Schema.org JSON-LD generation, and multi-domain dynamic branding for Cinejoy and FlixHQ.",
+  "name": "Cinejoy",
+  "description": "Stream Thousands of Movies & TV Shows Free on Cinejoy.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
