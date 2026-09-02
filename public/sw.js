@@ -1,10 +1,11 @@
-const CACHE_NAME = 'popcorn-cinema-v1';
+const CACHE_NAME = 'cinejoy-cinema-v2';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
   '/favicon.svg',
-  '/popcorn.svg',
+  '/icon-192.svg',
+  '/icon-512.svg',
   '/llms.txt',
   '/robots.txt',
   '/sitemap.xml'
@@ -19,13 +20,13 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Activate Event - Clean up stale caches
+// Activate Event - Clean up stale caches (including old popcorn caches)
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME)
+          .filter((name) => name !== CACHE_NAME && name !== 'cinejoy-api-cache' && name !== 'cinejoy-images-cache')
           .map((name) => caches.delete(name))
       );
     }).then(() => self.clients.claim())
@@ -48,7 +49,7 @@ self.addEventListener('fetch', (event) => {
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();
-            caches.open('popcorn-api-cache').then((cache) => {
+            caches.open('cinejoy-api-cache').then((cache) => {
               cache.put(event.request, responseClone);
             });
           }
@@ -62,7 +63,7 @@ self.addEventListener('fetch', (event) => {
   // TMDB Images: Cache-first with stale revalidation for smooth offline posters
   if (url.origin.includes('image.tmdb.org')) {
     event.respondWith(
-      caches.open('popcorn-images-cache').then(async (cache) => {
+      caches.open('cinejoy-images-cache').then(async (cache) => {
         const cachedResponse = await cache.match(event.request);
         if (cachedResponse) {
           return cachedResponse;

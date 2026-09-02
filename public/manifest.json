@@ -16,13 +16,19 @@
   "icons": [
     {
       "src": "/favicon.svg",
-      "sizes": "any",
+      "sizes": "48x48 64x64 any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "/popcorn.svg",
-      "sizes": "any",
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
@@ -52,11 +58,11 @@
   ],
   "screenshots": [
     {
-      "src": "/favicon.svg",
+      "src": "/icon-512.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "form_factor": "wide",
-      "label": "CineJoy Home Screen"
+      "label": "Cinejoy Home Screen"
     }
   ]
 }

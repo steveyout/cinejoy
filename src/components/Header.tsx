@@ -2,7 +2,7 @@ import React from 'react';
 import { Menu, Search, SlidersHorizontal, Bell, Film, Tv, Sparkles, User as UserIcon, Cloud } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
-import { PopcornLogo } from './PopcornLogo';
+import { CinejoyLogo } from './CinejoyLogo';
 import { triggerHaptic } from '../utils/haptics';
 
 interface HeaderProps {
@@ -37,9 +37,9 @@ export const Header: React.FC<HeaderProps> = ({ mediaFilter, setMediaFilter }) =
             <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
 
-          {/* Logo with Popcorn Icon & Glowing Accents */}
+          {/* Logo with Cinejoy Icon & Glowing Accents */}
           <div className="min-w-0 flex-shrink-1">
-            <PopcornLogo
+            <CinejoyLogo
               size="md"
               subtitleText={mediaFilter === 'movie' ? 'MOVIES' : mediaFilter === 'tv' ? 'TV SERIES' : 'CINEMA STREAM'}
               onClick={() => setActiveTab('home')}

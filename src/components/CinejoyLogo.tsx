@@ -137,5 +137,4 @@ export const CinejoyLogo: React.FC<CinejoyLogoProps> = ({
   );
 };
 
-// Backwards compatibility alias
 export const PopcornLogo = CinejoyLogo;

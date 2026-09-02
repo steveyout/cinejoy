@@ -100,19 +100,19 @@ export const getDomainBranding = (): DomainBrandConfig => {
     };
   }
 
-  // 4. Popcorn Movies (popcornmovies.online)
+  // 4. Cinejoy Movies Alternative domain / alias
   if (brandParam === 'popcorn' || hostname.includes('popcorn') || hostname.includes('popcornmovies.online')) {
     return {
-      brandName: 'Popcorn Movies',
-      brandShortName: 'Popcorn',
-      brandSub: 'MOVIES & TV',
-      documentTitle: 'Popcorn — Watch Trailers, Discover Movies & TV Shows',
-      description: 'Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings with Popcorn — the ultimate frosted glass cinema streaming experience.',
-      keywords: 'Popcorn Movies, popcornmovies.online, Popcorn, movies, cinema, TV shows, watch trailers, TMDB ratings, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
-      domain: 'popcornmovies.online',
-      logoType: 'popcorn',
-      accentGradient: 'from-amber-500 via-rose-600 to-red-700',
-      badgeGlowColor: 'rgba(245, 158, 11, 0.35)',
+      brandName: 'Cinejoy',
+      brandShortName: 'Cinejoy',
+      brandSub: 'CINEMA JOY',
+      documentTitle: 'Cinejoy — Watch Free Movies & TV Shows Online HD | Cinejoy Official',
+      description: 'Discover top trending movies, binge-worthy TV series, 4K official trailers, and TMDB user ratings with Cinejoy (cinejoy.to) — the ultimate frosted glass cinema streaming experience.',
+      keywords: 'Cinejoy, cinejoy.to, Cinejoy official, movies, cinema, TV shows, watch trailers, TMDB ratings, stream movies, top 10 movies, film discovery, cinema app, PWA movies',
+      domain: 'cinejoy.to',
+      logoType: 'cinejoy',
+      accentGradient: 'from-amber-400 via-rose-500 to-purple-600',
+      badgeGlowColor: 'rgba(245, 158, 11, 0.45)',
     };
   }
 

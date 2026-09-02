@@ -20,7 +20,7 @@ import {
 import { useApp } from '../context/AppContext';
 import { NavTab } from '../types';
 import { GENRES } from '../services/curatedData';
-import { PopcornLogo } from './PopcornLogo';
+import { CinejoyLogo } from './CinejoyLogo';
 import { getGlassTintConfig } from '../utils/themeStyles';
 import { getDomainBranding } from '../utils/domainBranding';
 
@@ -53,7 +53,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onSelectGenre }) => {
       {/* Brand Header */}
       <div className="flex items-center justify-between mb-8 px-1">
         {!collapsed ? (
-          <PopcornLogo
+          <CinejoyLogo
             size="md"
             subtitleText="FROSTED CINEMA"
             onClick={() => setActiveTab('home')}

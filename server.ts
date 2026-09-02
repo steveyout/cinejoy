@@ -38,6 +38,25 @@ async function startServer() {
     }
   });
 
+  // Direct Favicon & Manifest routes for Search Engine Bots (Googlebot, Bingbot, Yandex)
+  app.get('/favicon.ico', (req, res) => {
+    const faviconPath = path.resolve(process.cwd(), 'public', 'favicon.svg');
+    if (fs.existsSync(faviconPath)) {
+      res.type('image/svg+xml').sendFile(faviconPath);
+    } else {
+      res.status(404).end();
+    }
+  });
+
+  app.get('/favicon.svg', (req, res) => {
+    const faviconPath = path.resolve(process.cwd(), 'public', 'favicon.svg');
+    if (fs.existsSync(faviconPath)) {
+      res.type('image/svg+xml').sendFile(faviconPath);
+    } else {
+      res.status(404).end();
+    }
+  });
+
   let vite: any = null;
 
   if (!isProd) {

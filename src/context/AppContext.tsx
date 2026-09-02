@@ -91,10 +91,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  // Local storage for Watchlist
+  // Local storage for Watchlist (supports cinejoy_watchlist with popcorn_watchlist migration fallback)
   const [watchlist, setWatchlist] = useState<WatchlistItem[]>(() => {
     try {
-      const saved = localStorage.getItem('popcorn_watchlist');
+      const saved = localStorage.getItem('cinejoy_watchlist') || localStorage.getItem('popcorn_watchlist');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
@@ -104,7 +104,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Local storage for Recent Searches
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem('popcorn_recent_searches');
+      const saved = localStorage.getItem('cinejoy_recent_searches') || localStorage.getItem('popcorn_recent_searches');
       return saved ? JSON.parse(saved) : ['Dune', 'Lioness', 'Stranger Things', 'Minions'];
     } catch {
       return ['Dune', 'Lioness', 'Stranger Things', 'Minions'];
@@ -114,7 +114,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   // Local storage for Settings
   const [settings, setSettings] = useState<AppSettings>(() => {
     try {
-      const saved = localStorage.getItem('popcorn_settings');
+      const saved = localStorage.getItem('cinejoy_settings') || localStorage.getItem('popcorn_settings');
       return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : DEFAULT_SETTINGS;
     } catch {
       return DEFAULT_SETTINGS;
@@ -123,7 +123,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     try {
-      localStorage.setItem('popcorn_watchlist', JSON.stringify(watchlist));
+      localStorage.setItem('cinejoy_watchlist', JSON.stringify(watchlist));
     } catch (e) {
       console.error(e);
     }
@@ -131,7 +131,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     try {
-      localStorage.setItem('popcorn_recent_searches', JSON.stringify(recentSearches));
+      localStorage.setItem('cinejoy_recent_searches', JSON.stringify(recentSearches));
     } catch (e) {
       console.error(e);
     }
@@ -139,7 +139,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   useEffect(() => {
     try {
-      localStorage.setItem('popcorn_settings', JSON.stringify(settings));
+      localStorage.setItem('cinejoy_settings', JSON.stringify(settings));
       if (settings.tmdbApiKey) {
         setTmdbApiKey(settings.tmdbApiKey);
       }

@@ -19,7 +19,7 @@ import { useApp } from '../context/AppContext';
 import { useAuth } from '../context/AuthContext';
 import { NavTab } from '../types';
 import { GENRES } from '../services/curatedData';
-import { PopcornLogo } from './PopcornLogo';
+import { CinejoyLogo } from './CinejoyLogo';
 
 interface MobileDrawerProps {
   onSelectGenre: (genreId: number) => void;
@@ -61,7 +61,7 @@ export const MobileDrawer: React.FC<MobileDrawerProps> = ({ onSelectGenre }) => 
       <div className="absolute inset-y-0 left-0 w-4/5 max-w-xs backdrop-blur-3xl bg-[#080816]/85 supports-[backdrop-filter]:bg-[#080816]/75 border-r border-white/20 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2),0_20px_60px_rgba(0,0,0,0.95)] flex flex-col p-5 text-slate-100 z-10 animate-in slide-in-from-left duration-300">
         {/* Drawer Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/10">
-          <PopcornLogo
+          <CinejoyLogo
             size="sm"
             subtitleText="MOVIES & TV"
             onClick={() => handleNavClick('home')}
