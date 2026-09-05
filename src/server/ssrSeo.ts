@@ -333,10 +333,10 @@ export async function generateSsrSeoHtml(
   const isFlixHQ = brand.brandName === 'FlixHQ' || brand.domain === 'flixhq.to';
   const isCinejoy = brand.brandName === 'Cinejoy' || brand.domain === 'cinejoy.to';
 
-  let pageTitle = brand.documentTitle;
-  let pageDescription = brand.description;
-  let pageOgDescription = brand.ogDescription || brand.description;
-  let pageKeywords = brand.keywords;
+  let pageTitle = brand.defaultTitle;
+  let pageDescription = brand.defaultDescription;
+  let pageOgDescription = brand.ogDescription || brand.defaultDescription;
+  let pageKeywords = brand.defaultKeywords;
   let canonicalUrl = `https://${brand.domain}/`;
 
   if (tab === 'browse') {
