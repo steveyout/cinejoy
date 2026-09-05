@@ -66,9 +66,9 @@ interface DomainBrand {
   brandName: string;
   brandShortName: string;
   domain: string;
-  defaultTitle: string;
-  defaultDescription: string;
-  defaultKeywords: string;
+  documentTitle: string;
+  description: string;
+  keywords: string;
   ogDescription?: string;
   ogImageAlt?: string;
 }
@@ -99,9 +99,9 @@ function resolveDomainBrand(hostname: string, reqUrl?: string): DomainBrand {
       brandName: 'FlixHQ',
       brandShortName: 'FlixHQ',
       domain: 'flixhq.to',
-      defaultTitle: 'FlixHQ - Watch TV Shows Online Free, Watch Movies Online Free',
-      defaultDescription: 'FlixHQ is a free movies streaming site with zero ads. We let you watch movies online without having to register or paying, with over 10000 movies and TV-Series.',
-      defaultKeywords: 'watch movies online free, watch movies online, free movies online, watch full movies online, free movie streaming, watch tv shows online, watch tv shows online free, flixhq, flixhq.to, flixhq movies, watch series online free, stream hd movies, free movies streaming site',
+      documentTitle: 'FlixHQ - Watch TV Shows Online Free, Watch Movies Online Free',
+      description: 'FlixHQ is a free movies streaming site with zero ads. We let you watch movies online without having to register or paying, with over 10000 movies and TV-Series.',
+      keywords: 'watch movies online free, watch movies online, free movies online, watch full movies online, free movie streaming, watch tv shows online, watch tv shows online free, flixhq, flixhq.to, flixhq movies, watch series online free, stream hd movies, free movies streaming site',
       ogDescription: 'FlixHQ is a free movies streaming site with zero ads. We let you watch movies online without having to register or paying, with over 10000 movies and TV-Series.',
       ogImageAlt: 'FlixHQ Cinema Discovery App',
     };
@@ -113,9 +113,9 @@ function resolveDomainBrand(hostname: string, reqUrl?: string): DomainBrand {
     brandName: 'Cinejoy',
     brandShortName: 'Cinejoy',
     domain: 'cinejoy.to',
-    defaultTitle: 'Cinejoy',
-    defaultDescription: 'Stream Thousands of Movies & TV Shows Free on Cinejoy.',
-    defaultKeywords: 'cinejoy, cinejoy.to, watch free movies, free movies to watch online, watch movies online free, free movies streaming, free movies full, free movies download, watch movies hd, movies to watch, plus, ver, assistir, filmes, series, seriados, online, gratis, torrent, legendado, dublados, Series, HD, 720p, 1080p, 4k, cinema',
+    documentTitle: 'Cinejoy',
+    description: 'Stream Thousands of Movies & TV Shows Free on Cinejoy.',
+    keywords: 'cinejoy, cinejoy.to, watch free movies, free movies to watch online, watch movies online free, free movies streaming, free movies full, free movies download, watch movies hd, movies to watch, plus, ver, assistir, filmes, series, seriados, online, gratis, torrent, legendado, dublados, Series, HD, 720p, 1080p, 4k, cinema',
     ogDescription: 'Watch Free Movies & TV Shows Online, for free.',
     ogImageAlt: 'Cinejoy - Watch Free Movies & TV Shows Online',
   };
@@ -333,10 +333,10 @@ export async function generateSsrSeoHtml(
   const isFlixHQ = brand.brandName === 'FlixHQ' || brand.domain === 'flixhq.to';
   const isCinejoy = brand.brandName === 'Cinejoy' || brand.domain === 'cinejoy.to';
 
-  let pageTitle = brand.defaultTitle;
-  let pageDescription = brand.defaultDescription;
-  let pageOgDescription = brand.ogDescription || brand.defaultDescription;
-  let pageKeywords = brand.defaultKeywords;
+  let pageTitle = brand.documentTitle;
+  let pageDescription = brand.description;
+  let pageOgDescription = brand.ogDescription || brand.description;
+  let pageKeywords = brand.keywords;
   let canonicalUrl = `https://${brand.domain}/`;
 
   if (tab === 'browse') {

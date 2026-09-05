@@ -28,13 +28,14 @@ export function generateSlug(title: string | undefined, id: number): string {
  */
 export function parseSlug(slug: string): { title?: string; id: number } {
   const match = slug.match(/-(\d+)$/);
-  const id = match ? parseInt(match[1], 10) : NaN;
   
-  if (isNaN(id)) {
+  if (!match) {
     // If no ID found, try parsing as pure number
     const numericId = parseInt(slug, 10);
     return { id: isNaN(numericId) ? 0 : numericId };
   }
+  
+  const id = parseInt(match[1], 10);
   
   // Extract title part (everything before the last hyphen-number)
   const titlePart = slug.slice(0, match.index);
