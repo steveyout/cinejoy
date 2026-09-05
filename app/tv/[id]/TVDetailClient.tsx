@@ -35,7 +35,6 @@ export default function TVDetailClient({ initialMedia }: { initialMedia: MediaIt
     const fetchTVDetails = async () => {
       try {
         if (initialMedia) {
-          setActivePlayerMedia(initialMedia);
           return;
         }
         setLoading(true);
@@ -48,7 +47,6 @@ export default function TVDetailClient({ initialMedia }: { initialMedia: MediaIt
         const details = await tmdbService.getDetails(mediaId, 'tv');
         if (details) {
           setMedia(details);
-          setSelectedMedia(details);
         } else {
           setError('TV show not found');
         }

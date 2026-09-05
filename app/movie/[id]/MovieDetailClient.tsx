@@ -35,7 +35,6 @@ export default function MovieDetailClient({ initialMedia }: { initialMedia: Medi
     const fetchMovieDetails = async () => {
       try {
         if (initialMedia) {
-          setActivePlayerMedia(initialMedia);
           return;
         }
         setLoading(true);
@@ -48,7 +47,6 @@ export default function MovieDetailClient({ initialMedia }: { initialMedia: Medi
         const details = await tmdbService.getDetails(mediaId, 'movie');
         if (details) {
           setMedia(details);
-          setSelectedMedia(details);
         } else {
           setError('Movie not found');
         }
