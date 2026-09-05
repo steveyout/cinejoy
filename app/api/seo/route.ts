@@ -3,13 +3,11 @@ import { getDomainBranding } from '@/utils/domainBranding';
 import { tmdbService } from '@/src/services/tmdb';
 import { generateSlug } from '@/src/utils/slug';
 
-// Pre-cached popular media for faster SEO responses
-const popularMediaCache = new Map<string, { data: any | null; timestamp: number }>();
+// Cache configuration
 const CACHE_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
 
 // In-memory cache for TMDB responses
 const mediaCache = new Map<string, { data: any | null; timestamp: number }>();
-const CACHE_TTL_MS = 1000 * 60 * 60 * 24; // 24 hours
 
 async function fetchTmdbDetail(type: 'movie' | 'tv', id: string | number) {
   const cacheKey = `${type}_${id}`;
