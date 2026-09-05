@@ -38,7 +38,7 @@ export const UserProfileModal: React.FC = () => {
   if (!isProfileModalOpen || !user) return null;
 
   const totalFavorites = watchlist.filter(w => w.isFavorite).length;
-  const totalWatched = watchlist.filter(w => w.isWatched).length;
+  const totalWatched = watchlist.filter(w => w.watched).length;
 
   const handleSignOut = async () => {
     triggerHaptic('medium');

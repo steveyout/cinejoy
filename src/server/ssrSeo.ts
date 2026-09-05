@@ -198,7 +198,7 @@ export async function generateSsrSeoHtml(
       
       const backdropUrl = media.backdrop_path 
         ? `${IMAGE_BASE_URL}/w1280${media.backdrop_path}`
-        : (media.poster_path ? `${IMAGE_BASE_URL}/w780${media.poster_path}` : `https://${brand.domain}/favicon.svg`);
+        : (media.poster_path ? `${IMAGE_BASE_URL}/w780${media.poster_path}` : `https://${brand.domain}/favicon.png`);
       const posterUrl = media.poster_path 
         ? `${IMAGE_BASE_URL}/w500${media.poster_path}` 
         : backdropUrl;
@@ -477,7 +477,7 @@ export async function generateSsrSeoHtml(
     keywords: pageKeywords,
     canonicalUrl,
     ogType: 'website',
-    ogImage: `https://${brand.domain}/favicon.svg`,
+    ogImage: `https://${brand.domain}/favicon.png`,
     ogImageAlt: brand.ogImageAlt || `${brand.brandName} Cinema Discovery App`,
     brand,
     structuredData: [websiteSchema, webAppSchema]

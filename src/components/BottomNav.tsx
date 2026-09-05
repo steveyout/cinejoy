@@ -9,7 +9,7 @@ export const BottomNav: React.FC = () => {
   const { activeTab, setActiveTab, setIsDrawerOpen, watchlist, settings } = useApp();
   const currentTint = getGlassTintConfig(settings.glassTint);
 
-  const tabs: { id: NavTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  const tabs: { id: NavTab; label: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }[] = [
     { id: 'home', label: 'Home', icon: Home },
     { id: 'browse', label: 'Browse', icon: Compass },
     { id: 'search', label: 'Search', icon: Search },

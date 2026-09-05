@@ -352,28 +352,42 @@ export const DiscoverView: React.FC<DiscoverViewProps> = ({ initialGenreId }) =>
             variants={gridContainerVariants}
             initial="hidden"
             animate="visible"
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4.5 md:gap-5"
           >
             {results.map((item, index) => (
               <motion.div
                 key={`${item.id}-${index}`}
                 variants={gridItemVariants}
-                className="w-full flex justify-center"
               >
-                <MovieCard item={item} size="md" className="w-full" />
+                <MovieCard item={item} size="md" />
               </motion.div>
             ))}
           </motion.div>
 
-          {/* Infinite Scroll Observer Target Sentinel */}
-          <div ref={observerTargetRef} className="h-12 w-full flex items-center justify-center pt-4">
-            {loadingMore && (
-              <div className="flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-white/10 border border-white/15 backdrop-blur-xl text-white text-xs font-semibold shadow-lg animate-pulse">
-                <Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
-                <span>Loading more titles...</span>
-              </div>
-            )}
-          </div>
+          {/* Load More Skeleton / Infinite Scroll */}
+          {hasMore && results.length > 0 && (
+            <div className="pt-4">
+              <div ref={observerTargetRef} className="h-4 w-full" />
+              {loadingMore && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4.5 md:gap-5 pb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={`loading-${i}`} className="flex flex-col">
+                      <div className="aspect-[2/3] w-full rounded-2xl bg-white/5 border border-white/10 shadow-lg shimmer-effect relative overflow-hidden">
+                        <div className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-white/10 border border-white/15" />
+                      </div>
+                      <div className="mt-2.5 space-y-1.5 px-0.5">
+                        <div className="h-4 w-3/4 rounded-md bg-white/10 shimmer-effect" />
+                        <div className="flex items-center gap-2">
+                          <div className="h-3 w-10 rounded bg-white/10 shimmer-effect" />
+                          <div className="h-3 w-12 rounded-full bg-white/10 shimmer-effect" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* End of Collection or Back to Top Footer */}
           {!hasMore && results.length > 0 && (

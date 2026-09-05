@@ -5,7 +5,12 @@ const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p';
 
 // Default TMDB key from environment secret or fallback
-const ENV_TMDB_KEY = (import.meta.env?.VITE_TMDB_API_KEY as string | undefined)?.trim() || 'addfba41d0cb5aba2ebaae12ac92b671';
+// For Next.js compatibility
+const ENV_TMDB_KEY = typeof process !== 'undefined' && process.env.TMDB_API_KEY
+  ? process.env.TMDB_API_KEY.trim()
+  : (typeof process !== 'undefined' && process.env.NEXT_PUBLIC_TMDB_API_KEY
+      ? process.env.NEXT_PUBLIC_TMDB_API_KEY.trim()
+      : 'addfba41d0cb5aba2ebaae12ac92b671');
 let customApiKey = ENV_TMDB_KEY;
 
 export const setTmdbApiKey = (key: string) => {

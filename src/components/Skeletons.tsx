@@ -157,9 +157,9 @@ export const HomeViewSkeleton: React.FC = () => {
 
 export const DiscoverGridSkeleton: React.FC = () => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5 animate-in fade-in duration-200">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5 sm:gap-4.5 md:gap-5 animate-in fade-in duration-200">
       {[...Array(12)].map((_, i) => (
-        <div key={i} className="flex flex-col w-full">
+        <div key={i} className="flex flex-col">
           {/* Card Poster Shimmer */}
           <div className="aspect-[2/3] w-full rounded-2xl bg-white/5 border border-white/10 shadow-lg shimmer-effect relative overflow-hidden">
             <div className="absolute top-2.5 right-2.5 w-9 h-9 rounded-full bg-white/10 border border-white/15" />

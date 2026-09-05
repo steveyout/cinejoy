@@ -15,21 +15,21 @@
   "categories": ["entertainment", "movies", "multimedia", "video"],
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/favicon.png",
       "sizes": "48x48 64x64 any",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-192.svg",
+      "src": "/favicon.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.svg",
+      "src": "/favicon.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
@@ -39,21 +39,21 @@
       "short_name": "Movies",
       "description": "Browse top trending and popular blockbuster movies",
       "url": "/?tab=browse&type=movie",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/favicon.png", "sizes": "any" }]
     },
     {
       "name": "Popular TV Series",
       "short_name": "TV Shows",
       "description": "Explore binge-worthy top-rated TV series",
       "url": "/?tab=browse&type=tv",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/favicon.png", "sizes": "any" }]
     },
     {
       "name": "My Cinema Watchlist",
       "short_name": "Watchlist",
       "description": "View your saved movies and offline library",
       "url": "/?tab=library",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+      "icons": [{ "src": "/favicon.png", "sizes": "any" }]
     }
   ],
   "screenshots": [
