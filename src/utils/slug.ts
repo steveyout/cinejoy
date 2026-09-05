@@ -10,6 +10,8 @@ export function generateSlug(title: string | undefined, id: number): string {
   return title
     .toLowerCase()
     .trim()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
     // Replace spaces and underscores with hyphens
     .replace(/[\s_]+/g, '-')
     // Remove special characters (keep alphanumeric and hyphens)

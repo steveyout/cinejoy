@@ -1,152 +1,38 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useApp } from '@/src/context/AppContext';
+import type { Metadata } from 'next';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { tmdbService } from '@/src/services/tmdb';
-import { MediaItem } from '@/src/types';
-import { DetailModal } from '@/src/components/DetailModal';
-import { Header } from '@/src/components/Header';
-import { BottomNav } from '@/src/components/BottomNav';
-import { Sidebar } from '@/src/components/Sidebar';
-import { ToastContainer } from '@/src/components/ToastContainer';
-import { SettingsModal } from '@/src/components/SettingsModal';
-import { AuthModal } from '@/src/components/AuthModal';
-import { UserProfileModal } from '@/src/components/UserProfileModal';
-import { VideoPlayer } from '@/src/components/VideoPlayer';
-import { getGlassTintConfig } from '@/src/utils/themeStyles';
-import { extractIdFromSlug } from '@/src/utils/slug';
-import { AnimatePresence, motion } from 'motion/react';
+import { extractIdFromSlug, generateSlug } from '@/src/utils/slug';
+import { createMediaJsonLd, createMediaMetadata } from '@/src/server/mediaMetadata';
+import TVDetailClient from './TVDetailClient';
 
-export default function TVDetailPage({ params }: { params: { id: string } }) {
-  const router = useRouter();
-  const { settings, setSelectedMedia, activePlayerMedia, setActivePlayerMedia } = useApp();
-  const [media, setMedia] = useState<MediaItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [mediaFilter, setMediaFilter] = useState<'all' | 'movie' | 'tv'>('all');
+type PageProps = { params: Promise<{ id: string }> };
 
-  // Extract ID from slug (handles both "title-12345" and "12345" formats)
-  const mediaId = extractIdFromSlug(params.id);
+async function getShow(id: string) {
+  const mediaId = extractIdFromSlug(id);
+  if (!mediaId) return null;
+  const media = await tmdbService.getDetails(mediaId, 'tv');
+  return media?.media_type === 'tv' ? media : null;
+}
 
-  const currentTint = getGlassTintConfig(settings.glassTint);
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const media = await getShow((await params).id);
+  return media
+    ? createMediaMetadata(media)
+    : { title: 'TV Show Not Found', robots: { index: false, follow: false } };
+}
 
-  useEffect(() => {
-    const fetchTVDetails = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        if (isNaN(mediaId) || mediaId === 0) {
-          setError('Invalid TV show ID');
-          return;
-        }
-        
-        const details = await tmdbService.getDetails(mediaId, 'tv');
-        if (details) {
-          setMedia(details);
-          setSelectedMedia(details);
-        } else {
-          setError('TV show not found');
-        }
-      } catch (err) {
-        console.error('Error fetching TV show details:', err);
-        setError('Failed to load TV show details');
-      } finally {
-        setLoading(false);
-      }
-    };
+export default async function TVPage({ params }: PageProps) {
+  const { id } = await params;
+  const media = await getShow(id);
+  if (!media) notFound();
 
-    fetchTVDetails();
-  }, [mediaId, setSelectedMedia]);
-
-  const handleClose = () => {
-    setSelectedMedia(null);
-    router.push('/');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#050508] text-white flex flex-row" style={{ background: currentTint.radialBackground }}>
-        <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-          <Header mediaFilter={mediaFilter} setMediaFilter={setMediaFilter} />
-          <main className="flex-1 max-w-7xl w-full mx-auto pt-4 sm:pt-6 pb-28 sm:pb-32 lg:pb-12 px-2 sm:px-4">
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto"></div>
-                <p className="mt-4 text-white/60">Loading TV show details...</p>
-              </div>
-            </div>
-          </main>
-          <BottomNav />
-        </div>
-        <ToastContainer />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-[#050508] text-white flex flex-row" style={{ background: currentTint.radialBackground }}>
-        <Sidebar />
-        <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-          <Header mediaFilter={mediaFilter} setMediaFilter={setMediaFilter} />
-          <main className="flex-1 max-w-7xl w-full mx-auto pt-4 sm:pt-6 pb-28 sm:pb-32 lg:pb-12 px-2 sm:px-4">
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold text-red-500">Error</h2>
-                <p className="mt-4 text-white/60">{error}</p>
-                <button 
-                  onClick={() => router.push('/')}
-                  className="mt-6 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl transition-colors"
-                >
-                  Go Back
-                </button>
-              </div>
-            </div>
-          </main>
-          <BottomNav />
-        </div>
-        <ToastContainer />
-      </div>
-    );
-  }
+  const canonicalSlug = generateSlug(media.title || media.name, media.id);
+  if (id !== canonicalSlug) permanentRedirect(`/tv/${canonicalSlug}`);
 
   return (
-    <div className="min-h-screen bg-[#050508] text-white flex flex-row" style={{ background: currentTint.radialBackground }}>
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-        <Header mediaFilter={mediaFilter} setMediaFilter={setMediaFilter} />
-        <main className="flex-1 max-w-7xl w-full mx-auto pt-4 sm:pt-6 pb-28 sm:pb-32 lg:pb-12 px-2 sm:px-4">
-          {media && (
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <DetailModal
-                media={media}
-                onClose={handleClose}
-              />
-            </motion.div>
-          )}
-        </main>
-        <BottomNav />
-      </div>
-      
-      <AnimatePresence>
-        {activePlayerMedia && (
-          <VideoPlayer
-            media={activePlayerMedia}
-            onClose={() => setActivePlayerMedia(null)}
-          />
-        )}
-      </AnimatePresence>
-
-      <SettingsModal />
-      <AuthModal />
-      <UserProfileModal />
-      <ToastContainer />
-    </div>
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(createMediaJsonLd(media)) }} />
+      <TVDetailClient initialMedia={media} />
+    </>
   );
 }

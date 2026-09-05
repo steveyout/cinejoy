@@ -1,10 +1,12 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { Plus, Check, Play, Info } from 'lucide-react';
 import { MediaItem } from '../types';
 import { getImageUrl, formatYear } from '../services/tmdb';
 import { useApp } from '../context/AppContext';
 import { RatingRing } from './RatingRing';
+import { getMediaPath } from '../utils/urls';
 
 interface MovieCardProps {
   item: MediaItem;
@@ -21,6 +23,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({
   className = '',
   size = 'md',
 }) => {
+  const router = useRouter();
   const { setSelectedMedia, setActivePlayerMedia, toggleWatchlist, isInWatchlist } = useApp();
   const inWatchlist = isInWatchlist(item.id);
 
@@ -42,7 +45,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({
       whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.28, ease: [0.25, 1, 0.5, 1] }}
       className={`group relative flex-shrink-0 flex flex-col cursor-pointer select-none ${cardWidthClass} ${className}`}
-      onClick={() => setSelectedMedia(item)}
+      onClick={() => router.push(getMediaPath(item))}
     >
       {/* Poster Image Container with Glassmorphic Glow & Scale */}
       <div className="relative aspect-[2/3] w-full rounded-2xl overflow-hidden bg-white/5 border border-white/10 shadow-lg shadow-black/60 transition-all duration-300 ease-out group-hover:border-amber-400/40 group-hover:shadow-[0_0_30px_rgba(245,158,11,0.25),0_14px_32px_rgba(0,0,0,0.85)]">
