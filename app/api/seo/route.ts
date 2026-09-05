@@ -96,9 +96,9 @@ export async function GET(request: NextRequest) {
 
     // Generate SEO metadata
     let metadata: Record<string, any> = {
-      title: brand.defaultTitle,
-      description: brand.defaultDescription,
-      keywords: brand.defaultKeywords,
+      title: brand.documentTitle,
+      description: brand.description,
+      keywords: brand.keywords,
       canonicalUrl: `https://${brand.domain}/`,
       ogType: 'website',
       ogImage: `https://${brand.domain}/favicon.png`,
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
           applicationCategory: 'EntertainmentApplication',
           genre: 'Movies & TV',
           operatingSystem: 'All',
-          description: brand.defaultDescription,
+          description: brand.description,
           offers: {
             '@type': 'Offer',
             price: '0',
@@ -150,7 +150,7 @@ export async function GET(request: NextRequest) {
           name: brand.brandName,
           url: `https://${brand.domain}`,
           logo: `https://${brand.domain}/favicon.png`,
-          description: brand.defaultDescription,
+          description: brand.description,
           sameAs: [
             `https://twitter.com/${brand.brandName.toLowerCase().replace(/[^a-z0-9]/g, '')}`,
             `https://facebook.com/${brand.brandName.toLowerCase().replace(/[^a-z0-9]/g, '')}`,

@@ -32,9 +32,9 @@ export function getSEOSettings(): SEOSettings {
   
   return {
     brand,
-    defaultTitle: brand.defaultTitle,
-    defaultDescription: brand.defaultDescription,
-    defaultKeywords: brand.defaultKeywords,
+    defaultTitle: brand.documentTitle,
+    defaultDescription: brand.description,
+    defaultKeywords: brand.keywords,
     domain,
     canonicalBase: baseUrl,
     ogImage: `${baseUrl}/favicon.png`,
@@ -111,7 +111,7 @@ function generateBaseStructuredData(settings: SEOSettings): any[] {
       applicationCategory: 'EntertainmentApplication',
       genre: 'Movies & TV',
       operatingSystem: 'All',
-      description: brand.defaultDescription,
+      description: brand.description,
       offers: {
         '@type': 'Offer',
         price: '0',
@@ -134,7 +134,7 @@ function generateBaseStructuredData(settings: SEOSettings): any[] {
       name: brand.brandName,
       url: baseUrl,
       logo: `${baseUrl}/favicon.png`,
-      description: brand.defaultDescription,
+      description: brand.description,
       sameAs: [
         `https://twitter.com/${cleanBrand}`,
         `https://facebook.com/${cleanBrand}`,

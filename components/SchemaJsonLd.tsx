@@ -49,7 +49,7 @@ export function SchemaJsonLd({
           alternateName: title,
           url: url || `${baseUrl}${pathname}`,
           image: image || `${baseUrl}/favicon.png`,
-          description: description || branding.defaultDescription,
+          description: description || branding.description,
           datePublished: datePublished || '2026-01-01',
           genre: genre || ['Drama', 'Action'],
           aggregateRating: {
@@ -87,7 +87,7 @@ export function SchemaJsonLd({
           alternateName: title,
           url: url || `${baseUrl}${pathname}`,
           image: image || `${baseUrl}/favicon.png`,
-          description: description || branding.defaultDescription,
+          description: description || branding.description,
           datePublished: datePublished || '2026-01-01',
           genre: genre || ['Drama', 'Action'],
           numberOfSeasons: 1,
@@ -171,7 +171,7 @@ export function SchemaJsonLd({
             applicationCategory: 'EntertainmentApplication',
             genre: 'Movies & TV',
             operatingSystem: 'All',
-            description: branding.defaultDescription,
+            description: branding.description,
             offers: {
               '@type': 'Offer',
               price: '0',

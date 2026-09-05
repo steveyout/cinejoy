@@ -18,11 +18,11 @@ export async function generateMetadata({
   const branding = getDomainBranding();
   
   // Default metadata
-  let title = branding.defaultTitle;
-  let description = branding.defaultDescription;
-  let keywords = branding.defaultKeywords;
-  let ogTitle = branding.defaultTitle;
-  let ogDescription = branding.ogDescription || branding.defaultDescription;
+  let title = branding.documentTitle;
+  let description = branding.description;
+  let keywords = branding.keywords;
+  let ogTitle = branding.documentTitle;
+  let ogDescription = branding.ogDescription || branding.description;
   let ogImage = `https://${branding.domain}/favicon.png`;
   let ogImageAlt = branding.ogImageAlt || `${branding.brandName} Cinema Discovery App`;
   let canonicalUrl = `https://${branding.domain}/`;
