@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import Script from 'next/script';
 import './globals.css';
 import { Providers } from '@/components/Providers';
+import { GoogleAnalytics } from '@/components/GoogleAnalytics';
 import { getDomainBranding } from '@/utils/domainBranding';
 import { cookies, headers } from 'next/headers';
 import { generateSlug } from '@/src/utils/slug';
@@ -16,7 +16,7 @@ export async function generateMetadata({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined };
 }): Promise<Metadata> {
-  const branding = getDomainBranding();
+  const branding = await getDomainBranding();
   
   // Default metadata
   let title = branding.documentTitle;
@@ -152,27 +152,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const gaId = process.env.NEXT_PUBLIC_GA_TRACKING_ID;
-
   return (
     <html lang="en">
       <body className={`${inter.className} bg-[#050508] text-white`}>
-        {gaId && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){window.dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${gaId}', { send_page_view: true });
-              `}
-            </Script>
-          </>
-        )}
+        <GoogleAnalytics />
         <Providers>
           {children}
         </Providers>

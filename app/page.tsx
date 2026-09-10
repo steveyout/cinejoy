@@ -18,6 +18,7 @@ import { AuthModal } from '@/src/components/AuthModal';
 import { UserProfileModal } from '@/src/components/UserProfileModal';
 import { getGlassTintConfig } from '@/src/utils/themeStyles';
 import { AnimatePresence, motion } from 'motion/react';
+import { AdBanner } from '@/components/AdBanner';
 
 export default function MainPage() {
   const { 
@@ -110,6 +111,9 @@ export default function MainPage() {
         {/* Mobile Bottom Navigation Bar */}
         <BottomNav />
       </div>
+
+      {/* Desktop Sticky Ad Sidebar */}
+      <AdBanner />
 
       {/* Detail Modal */}
       <AnimatePresence>

@@ -1,5 +1,13 @@
 import { MetadataRoute } from 'next';
-import { getDomainBranding } from '@/src/utils/domainBranding';
+import { headers } from 'next/headers';
+
+function resolveDomain(host: string | null): string {
+  const h = host?.toLowerCase() || '';
+  if (h.includes('flixhq')) return h.includes('flixhq.ink') ? 'flixhq.ink' : 'flixhq.to';
+  if (h.includes('flihq.to')) return 'flixhq.to';
+  if (h.includes('cinejoy.online')) return 'cinejoy.online';
+  return 'cinejoy.to';
+}
 
 // Static pages that should be in sitemap
 const staticPages = [
@@ -22,9 +30,10 @@ const popularMedia = [
   { id: 1399, type: 'tv', slug: 'game-of-thrones-1399' },
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const branding = getDomainBranding();
-  const domain = branding.domain;
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const h = await headers();
+  const host = h.get('host') || h.get('x-forwarded-host') || null;
+  const domain = resolveDomain(host);
   const baseUrl = `https://${domain}`;
 
   // Static pages

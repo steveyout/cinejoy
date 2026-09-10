@@ -62,11 +62,16 @@ function getBrandingForDomain(domain: string | null = null): DomainBrandConfig {
 }
 
 // Server-side function for Next.js App Router
-export function getDomainBranding(): DomainBrandConfig {
-  // In Next.js App Router, we can access headers to determine the domain
-  // For now, we'll use the default branding since we can't access request headers in this context
-  // The actual domain detection will be handled in the layout component
-  return getBrandingForDomain(null);
+// Reads the host header to detect the current domain
+export async function getDomainBranding(): Promise<DomainBrandConfig> {
+  try {
+    const { headers } = await Promise.resolve(require('next/headers'));
+    const h = await headers();
+    const host = h.get('host') || h.get('x-forwarded-host') || null;
+    return getBrandingForDomain(host);
+  } catch {
+    return getBrandingForDomain(null);
+  }
 }
 
 // Client-side version that can detect current domain

@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     const hostname = request.headers.get('host') || 'cinejoy.to';
     const targetUrl = url.searchParams.get('url') || '/';
     
-    const brand: DomainBrandConfig = getDomainBranding();
+    const brand: DomainBrandConfig = await getDomainBranding();
     const parsedUrl = new URL(targetUrl, `https://${brand.domain}`);
     const pathname = parsedUrl.pathname;
     const searchParams = parsedUrl.searchParams;
